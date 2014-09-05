@@ -1,6 +1,6 @@
 //
-//  IQWebService.h
-// https://github.com/hackiftekhar/IQWebService
+//  IQ_PFWebServiceConstants.h
+// https://github.com/hackiftekhar/IQParseSDK
 // Copyright (c) 2013-14 Iftekhar Qurashi.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -41,6 +41,16 @@ extern NSString *const kParseObjectsKey;
 
 extern NSString *const kParseCreatedAtKey;
 extern NSString *const kParseUpdatedAtKey;
+
+extern NSString *const kParseResultsKey;
+extern NSString *const kParseCountKey;
+extern NSString *const kParseLimitKey;
+extern NSString *const kParseSkipKey;
+extern NSString *const kParseWhereKey;
+extern NSString *const kParseOrderKey;
+
+extern NSString *const kParseUrlKey;
+extern NSString *const kParseNameKey;
 
 extern NSString *const kParseLessThanKey;
 extern NSString *const kParseLessThanOrEqualKey;

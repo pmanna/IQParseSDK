@@ -1,10 +1,25 @@
 //
 //  IQ_PFObject.m
-//  IQParseSDK
+// https://github.com/hackiftekhar/IQParseSDK
+// Copyright (c) 2013-14 Iftekhar Qurashi.
 //
-//  Created by lucho on 8/28/13.
-//  Copyright (c) 2013 lucho. All rights reserved.
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
 //
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+// THE SOFTWARE.
 
 #import "IQ_PFObject.h"
 #import "IQ_PFWebService.h"
@@ -396,7 +411,7 @@
 //- (BOOL)isDataAvailable;
 //- (void)refresh;
 //- (void)refresh:(NSError **)error;
-//- (void)refreshInBackgroundWithBlock:(IQ_PFObjectResultBlock)block;
+//- (void)refreshInBackgroundWithBlock:(IQ_PFObjectResultBlock)block
 //- (void)refreshInBackgroundWithTarget:(id)target selector:(SEL)selector;
 
 //- (void)fetch:(NSError **)error;
@@ -418,9 +433,42 @@
 
 //- (BOOL)delete;
 //- (BOOL)delete:(NSError **)error;
-//- (void)deleteInBackground;
-//- (void)deleteInBackgroundWithBlock:(IQ_PFBooleanResultBlock)block;
-//- (void)deleteInBackgroundWithTarget:(id)target selector:(SEL)selector;
+- (void)deleteInBackground
+{
+    [self deleteInBackgroundWithBlock:NULL];
+}
+
+- (void)deleteInBackgroundWithBlock:(IQ_PFBooleanResultBlock)block
+{
+    [[IQ_PFWebService service] deleteObjectWithParseClass:self.parseClassName objectId:self.objectId completionHandler:^(NSDictionary *result, NSError *error) {
+
+        if (result)
+        {
+            self.objectId = nil;
+            _parseClassName = nil;
+            [displayAttributes removeAllObjects];
+            [needUpdateAttributes removeAllObjects];
+        }
+        
+        if (block)
+        {
+            block((result!= nil),error);
+        }
+    }];
+}
+
+- (void)deleteInBackgroundWithTarget:(id)target selector:(SEL)selector
+{
+    [self deleteInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
+        
+        NSInvocation *invocation = [NSInvocation invocationWithMethodSignature:[target methodSignatureForSelector:selector]];
+        [invocation setArgument:&(succeeded) atIndex:2];
+        [invocation setArgument:&error atIndex:3];
+        [invocation invoke];
+        
+    }];
+}
+
 //- (void)deleteEventually;
 
 //- (BOOL)isDirty;

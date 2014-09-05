@@ -21,6 +21,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+
 #import "IQURLConnection.h"
 
 @interface IQURLConnection ()
@@ -165,7 +166,7 @@ static NSOperationQueue *queue;
 -(void)cancel
 {
     [super cancel];
-    [self sendCompletionData:_data error:[NSError errorWithDomain:@"UserCancelDomain" code:100 userInfo:nil]];
+//    [self sendCompletionData:_data error:[NSError errorWithDomain:@"UserCancelDomain" code:100 userInfo:nil]];
 }
 
 - (void)connectionDidFinishLoading:(NSURLConnection *)connection

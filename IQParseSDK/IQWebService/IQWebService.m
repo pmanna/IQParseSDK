@@ -20,6 +20,8 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
+
+
 #import "IQWebService.h"
 #import "IQURLConnection.h"
 
@@ -176,7 +178,29 @@
     return [self requestWithURL:url httpMethod:method contentType:contentType httpBody:httpBody responseBlock:response uploadProgressBlock:uploadProgress downloadProgressBlock:downloadProgress completionHandler:completionHandler];
 }
 
+-(IQURLConnection*)requestWithPath:(NSString*)path httpMethod:(NSString*)method contentType:(NSString*)contentType httpBody:(NSData*)httpBody responseBlock:(IQResponseBlock)response uploadProgressBlock:(IQProgressBlock)uploadProgress downloadProgressBlock:(IQProgressBlock)downloadProgress completionHandler:(IQDictionaryCompletionBlock)completionHandler
+{
+    NSURL *url = [NSURL URLWithString:[[NSString stringWithFormat:@"%@%@",self.serverURL,path] stringByAddingPercentEscapesUsingEncoding:NSASCIIStringEncoding]];
+    
+    return [self requestWithURL:url httpMethod:method contentType:contentType httpBody:httpBody responseBlock:response uploadProgressBlock:uploadProgress downloadProgressBlock:downloadProgress completionHandler:completionHandler];
+}
+
 -(IQURLConnection*)requestWithURL:(NSURL*)url httpMethod:(NSString*)method contentType:(NSString*)contentType httpBody:(NSData*)httpBody responseBlock:(IQResponseBlock)response uploadProgressBlock:(IQProgressBlock)uploadProgress downloadProgressBlock:(IQProgressBlock)downloadProgress completionHandler:(IQDictionaryCompletionBlock)completionHandler
+{
+    return [self requestWithURL:url httpMethod:method contentType:contentType httpBody:httpBody responseBlock:response uploadProgressBlock:uploadProgress downloadProgressBlock:downloadProgress dataCompletionHandler:^(NSData *result, NSError *error) {
+
+        if (completionHandler != NULL)
+        {
+            NSDictionary *response = [NSJSONSerialization JSONObjectWithData:result options:0 error:nil];
+            
+            dispatch_async(dispatch_get_main_queue(), ^{
+                completionHandler(response, error);
+            });
+        }
+    }];
+}
+
+-(IQURLConnection*)requestWithURL:(NSURL*)url httpMethod:(NSString*)method contentType:(NSString*)contentType httpBody:(NSData*)httpBody responseBlock:(IQResponseBlock)response uploadProgressBlock:(IQProgressBlock)uploadProgress downloadProgressBlock:(IQProgressBlock)downloadProgress dataCompletionHandler:(IQDataCompletionBlock)completionHandler
 {
     NSMutableURLRequest *request = [IQWebService requestWithURL:url httpMethod:method contentType:contentType body:httpBody];
     
@@ -213,17 +237,14 @@
         
         if (completionHandler != NULL)
         {
-            NSDictionary *response = [NSJSONSerialization JSONObjectWithData:result options:0 error:nil];
-            
             dispatch_async(dispatch_get_main_queue(), ^{
-                completionHandler(response, error);
+                completionHandler(result, error);
             });
         }
     }];
     
     return connection;
 }
-
 
 +(NSString*)httpParameterString:(NSDictionary*)dictionary
 {

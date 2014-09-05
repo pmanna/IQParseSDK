@@ -1,6 +1,6 @@
 //
-//  MyWebService.m
-// https://github.com/hackiftekhar/IQWebService
+//  IQ_PFWebService.m
+// https://github.com/hackiftekhar/IQParseSDK
 // Copyright (c) 2013-14 Iftekhar Qurashi.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -20,6 +20,7 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
+
 
 #import "IQ_PFWebService.h"
 #import "IQ_Parse.h"
@@ -46,12 +47,12 @@
 #pragma mark -
 #pragma mark - Objects
 
--(void)objectsWithParseClass:(NSString*)parseClassName urlParameter:(NSDictionary*)urlParameter completionHandler:(IQDictionaryCompletionBlock)completion
+-(IQURLConnection*)objectsWithParseClass:(NSString*)parseClassName urlParameter:(NSDictionary*)urlParameter completionHandler:(IQDictionaryCompletionBlock)completion
 {
-    [self objectsWithParseClass:parseClassName urlParameter:urlParameter objectId:nil completionHandler:completion];
+    return [self objectsWithParseClass:parseClassName urlParameter:urlParameter objectId:nil completionHandler:completion];
 }
 
--(void)objectsWithParseClass:(NSString*)parseClassName urlParameter:(NSDictionary*)urlParameter objectId:(NSString*)objectId completionHandler:(IQDictionaryCompletionBlock)completion
+-(IQURLConnection*)objectsWithParseClass:(NSString*)parseClassName urlParameter:(NSDictionary*)urlParameter objectId:(NSString*)objectId completionHandler:(IQDictionaryCompletionBlock)completion
 {
     NSMutableString *path = [[NSMutableString alloc] initWithFormat:@"classes/%@",parseClassName];
     
@@ -63,33 +64,33 @@
     
     if (objectId)   [path appendFormat:@"/%@",objectId];
     
-    [self requestWithPath:path httpMethod:kIQHTTPMethodGET parameter:nil completionHandler:completion];
+    return [self requestWithPath:path httpMethod:kIQHTTPMethodGET parameter:nil completionHandler:completion];
 }
 
--(void)createObjectWithParseClass:(NSString*)parseClassName attributes:(NSDictionary*)attributes completionHandler:(IQDictionaryCompletionBlock)completion
+-(IQURLConnection*)createObjectWithParseClass:(NSString*)parseClassName attributes:(NSDictionary*)attributes completionHandler:(IQDictionaryCompletionBlock)completion
 {
     NSMutableString *path = [[NSMutableString alloc] initWithFormat:@"classes/%@",parseClassName];
     
-    [self requestWithPath:path httpMethod:kIQHTTPMethodPOST parameter:attributes completionHandler:completion];
+    return [self requestWithPath:path httpMethod:kIQHTTPMethodPOST parameter:attributes completionHandler:completion];
 }
 
--(void)updateObjectWithParseClass:(NSString*)parseClassName objectId:(NSString*)objectId attributes:(NSDictionary*)attributes completionHandler:(IQDictionaryCompletionBlock)completion
+-(IQURLConnection*)updateObjectWithParseClass:(NSString*)parseClassName objectId:(NSString*)objectId attributes:(NSDictionary*)attributes completionHandler:(IQDictionaryCompletionBlock)completion
 {
     NSMutableString *path = [[NSMutableString alloc] initWithFormat:@"classes/%@/%@",parseClassName,objectId];
     
-    [self requestWithPath:path httpMethod:kIQHTTPMethodPUT parameter:attributes completionHandler:completion];
+    return [self requestWithPath:path httpMethod:kIQHTTPMethodPUT parameter:attributes completionHandler:completion];
 }
 
--(void)deleteObjectWithParseClass:(NSString*)parseClassName objectId:(NSString*)objectId completionHandler:(IQDictionaryCompletionBlock)completion
+-(IQURLConnection*)deleteObjectWithParseClass:(NSString*)parseClassName objectId:(NSString*)objectId completionHandler:(IQDictionaryCompletionBlock)completion
 {
     NSMutableString *path = [[NSMutableString alloc] initWithFormat:@"classes/%@",parseClassName];
     
     if (objectId)   [path appendFormat:@"/%@",objectId];
     
-    [self requestWithPath:path httpMethod:kIQHTTPMethodDELETE parameter:nil completionHandler:completion];
+    return [self requestWithPath:path httpMethod:kIQHTTPMethodDELETE parameter:nil completionHandler:completion];
 }
 
--(void)deleteField:(NSString*)fieldName WithParseClass:(NSString*)parseClassName objectId:(NSString*)objectId completionHandler:(IQDictionaryCompletionBlock)completion
+-(IQURLConnection*)deleteField:(NSString*)fieldName WithParseClass:(NSString*)parseClassName objectId:(NSString*)objectId completionHandler:(IQDictionaryCompletionBlock)completion
 {
     NSMutableString *path = [[NSMutableString alloc] initWithFormat:@"classes/%@",parseClassName];
     
@@ -97,39 +98,50 @@
     
     NSDictionary *deleteFieldDict = @{fieldName: [[self class] deleteFieldAttribute]};
     
-    [self requestWithPath:path httpMethod:kIQHTTPMethodPUT parameter:deleteFieldDict completionHandler:completion];
+    return [self requestWithPath:path httpMethod:kIQHTTPMethodPUT parameter:deleteFieldDict completionHandler:completion];
 }
 
--(void)performBatchOperations:(NSArray*)operations completionHandler:(IQDictionaryCompletionBlock)completion
+-(IQURLConnection*)performBatchOperations:(NSArray*)operations completionHandler:(IQDictionaryCompletionBlock)completion
 {
     NSDictionary *dictRequests = @{kParseRequestsKey: operations};
     
-    [self requestWithPath:@"batch" httpMethod:kIQHTTPMethodPOST parameter:dictRequests completionHandler:completion];
+    return [self requestWithPath:@"batch" httpMethod:kIQHTTPMethodPOST parameter:dictRequests completionHandler:completion];
 }
 
 
 #pragma mark -
 #pragma mark - Queries
 
--(void)queryWithParseClass:(NSString*)parseClassName query:(NSDictionary*)query completionHandler:(IQDictionaryCompletionBlock)completion
+-(IQURLConnection*)queryWithParseClass:(NSString*)parseClassName query:(NSDictionary*)query completionHandler:(IQDictionaryCompletionBlock)completion
 {
-    NSData *queryData = [NSJSONSerialization dataWithJSONObject:query options:0 error:nil];
-    NSString *queryString = [[NSString alloc] initWithData:queryData encoding:NSASCIIStringEncoding];
-
-    NSDictionary *dict = @{@"where": queryString};
-
-    [self objectsWithParseClass:parseClassName urlParameter:dict completionHandler:completion];
+    return [self objectsWithParseClass:parseClassName urlParameter:query completionHandler:completion];
 }
 
 
 #pragma mark -
 #pragma mark - Cloud Code
 
--(void)callFunction:(NSString*)function withParameters:(NSDictionary *)parameters completionHandler:(IQDictionaryCompletionBlock)completion
+-(IQURLConnection*)callFunction:(NSString*)function withParameters:(NSDictionary *)parameters completionHandler:(IQDictionaryCompletionBlock)completion
 {
     NSMutableString *path = [[NSMutableString alloc] initWithFormat:@"functions/%@",function];
 
-    [self requestWithPath:path httpMethod:kIQHTTPMethodPOST parameter:parameters completionHandler:completion];
+    return [self requestWithPath:path httpMethod:kIQHTTPMethodPOST parameter:parameters completionHandler:completion];
+}
+
+
+#pragma mark -
+#pragma mark - Files
+
+-(IQURLConnection*)saveFileData:(NSData*)data fileName:(NSString*)fileName contentType:(NSString*)contentType uploadProgressBlock:(IQProgressBlock)uploadProgress completionHandler:(IQDictionaryCompletionBlock)completion
+{
+    NSMutableString *path = [[NSMutableString alloc] initWithFormat:@"files/%@",fileName];
+
+    return [self requestWithPath:path httpMethod:kIQHTTPMethodPOST contentType:contentType httpBody:data responseBlock:nil uploadProgressBlock:uploadProgress downloadProgressBlock:nil completionHandler:completion];
+}
+
+-(IQURLConnection*)getDataWithFileUrl:(NSURL*)url downloadProgressBlock:(IQProgressBlock)downloadProgress completionHandler:(IQDataCompletionBlock)completion
+{
+    return [self requestWithURL:url httpMethod:kIQHTTPMethodGET contentType:nil httpBody:nil responseBlock:nil uploadProgressBlock:nil downloadProgressBlock:downloadProgress dataCompletionHandler:completion];
 }
 
 
