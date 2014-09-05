@@ -41,9 +41,6 @@
     NSMutableDictionary *needUpdateAttributes;
 }
 
-//@synthesize parseClassName = _parseClassName, objectId = _objectId, updatedAt = _updatedAt, createdAt = _createdAt;
-
-
 - (id)init
 {
     self = [super init];
@@ -520,5 +517,13 @@
 {
     return @{kParse__OpKey:@"Remove",   kParseObjectsKey:array};
 }
+
+//Batch operation creation
++(NSDictionary*)batchOperationWithMethod:(NSString*)method path:(NSString*)path body:(NSDictionary*)body
+{
+    return @{kParseMethodKey: method, kParsePathKey: path, kParseBodyKey:body};
+}
+
+
 
 @end

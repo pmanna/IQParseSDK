@@ -148,122 +148,13 @@
 #pragma mark -
 #pragma mark - Helper
 
-+(NSDictionary*)batchOperationWithMethod:(NSString*)method path:(NSString*)path body:(NSDictionary*)body
-{
-    return @{kParseMethodKey: method, kParsePathKey: path, kParseBodyKey:body};
-}
-
 +(NSDictionary*)deleteFieldAttribute
 {
     return @{kParse__OpKey:@"Delete"};
 }
 
 
-//+(NSDictionary*)addRelationAttribute
-//{
-//    /*
-//     curl -X PUT \
-//     -H "X-Parse-Application-Id: kk7wtCOCuafGq4EuSZXKy66RuUKBHjUYrJlDp0d7" \
-//     -H "X-Parse-REST-API-Key: jBPJ9swSZq97gmXqDNG1Gm57XBG0cSdC3smdIHdJ" \
-//     -H "Content-Type: application/json" \
-//     -d '{"opponents":{"__op":"AddRelation","objects":[{"__type":"Pointer","className":"Player","objectId":"Vx4nudeWn"}]}}' \
-//     https://api.parse.com/1/classes/GameScore/Ed1nuqPvcm
-//     Show examples for:  Use keys for:
-//     To remove an object from a relation, you can do:
-//     */    return nil;
-//}
-//
-//+(NSDictionary*)removeRelationAttribute
-//{
-//    /*
-//     curl -X PUT \
-//     -H "X-Parse-Application-Id: kk7wtCOCuafGq4EuSZXKy66RuUKBHjUYrJlDp0d7" \
-//     -H "X-Parse-REST-API-Key: jBPJ9swSZq97gmXqDNG1Gm57XBG0cSdC3smdIHdJ" \
-//     -H "Content-Type: application/json" \
-//     -d '{"opponents":{"__op":"RemoveRelation","objects":[{"__type":"Pointer","className":"Player","objectId":"Vx4nudeWn"}]}}' \
-//     https://api.parse.com/1/classes/GameScore/Ed1nuqPvcm
-//     */    return nil;
-//}
+
 
 @end
-
-
-/*
- Quick Reference
- 
- All API access is over HTTPS, and accessed via the https://api.parse.com domain. The relative path prefix /1/ indicates that we are currently using version 1 of the API.
- 
- Objects
- 
- URL	HTTP Verb	Functionality
- /1/classes/<className>	GET	Queries
- /1/classes/<className>/<objectId>	DELETE	Deleting Objects
- Users
- 
- URL	HTTP Verb	Functionality
- /1/users	POST	Signing Up
- Linking Users
- /1/login	GET	Logging In
- /1/users/<objectId>	GET	Retrieving Users
- /1/users/me	GET	Validating Session Tokens
- Retrieving Current User
- /1/users/<objectId>	PUT	Updating Users
- Linking Users
- Verifying Emails
- /1/users	GET	Querying Users
- /1/users/<objectId>	DELETE	Deleting Users
- /1/requestPasswordReset	POST	Requesting A Password Reset
- Roles
- 
- URL	HTTP Verb	Functionality
- /1/roles	POST	Creating Roles
- /1/roles/<objectId>	GET	Retrieving Roles
- /1/roles/<objectId>	PUT	Updating Roles
- /1/roles	GET	Querying Roles
- /1/roles/<objectId>	DELETE	Deleting Roles
- Files
- 
- URL	HTTP Verb	Functionality
- /1/files/<fileName>	POST	Uploading Files
- Analytics
- 
- URL	HTTP Verb	Functionality
- /1/events/AppOpened	POST	Analytics
- /1/events/<eventName>	POST	Custom Analytics
- Push Notifications
- 
- URL	HTTP Verb	Functionality
- /1/push	POST	Push Notifications
- Installations
- 
- URL	HTTP Verb	Functionality
- /1/installations	POST	Uploading Installation Data
- /1/installations/<objectId>	GET	Retrieving Installations
- /1/installations/<objectId>	PUT	Updating Installations
- /1/installations	GET	Querying Installations
- /1/installations/<objectId>	DELETE	Deleting Installations
- Cloud Functions
- 
- URL	HTTP Verb	Functionality
- /1/functions	POST	Calling Cloud Functions
- /1/jobs	POST	Triggering Background Jobs
- 
- */
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
