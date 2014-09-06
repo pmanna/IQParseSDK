@@ -26,8 +26,8 @@
 
 @interface IQ_PFCloud : NSObject
 
-//+ (id)callFunction:(NSString *)function withParameters:(NSDictionary *)parameters;
-//+ (id)callFunction:(NSString *)function withParameters:(NSDictionary *)parameters error:(NSError **)error;
++ (id)callFunction:(NSString *)function withParameters:(NSDictionary *)parameters;
++ (id)callFunction:(NSString *)function withParameters:(NSDictionary *)parameters error:(NSError **)error;
 + (void)callFunctionInBackground:(NSString *)function withParameters:(NSDictionary *)parameters block:(IQ_PFIdResultBlock)block;
 + (void)callFunctionInBackground:(NSString *)function withParameters:(NSDictionary *)parameters target:(id)target selector:(SEL)selector;
 

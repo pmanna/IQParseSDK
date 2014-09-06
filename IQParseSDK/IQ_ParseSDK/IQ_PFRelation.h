@@ -28,9 +28,9 @@
 @interface IQ_PFRelation : NSObject
 
 //@property (nonatomic, strong) NSString *targetClass;
-//
+
 //- (IQ_PFQuery *)query;
-//
+
 //- (void)addObject:(IQ_PFObject *)object;
 //- (void)removeObject:(IQ_PFObject *)object;
 

@@ -22,7 +22,7 @@
 // THE SOFTWARE.
 
 #import "IQ_PFObject.h"
-#import "IQ_PFWebService.h"
+#import "IQPFWebService.h"
 
 #import <Foundation/NSDate.h>
 #import <Foundation/NSThread.h>
@@ -50,6 +50,19 @@
         needUpdateAttributes    = [[NSMutableDictionary alloc] init];
     }
     return self;
+}
+
+-(void)handleResult:(NSDictionary*)result
+{
+    if ([result objectForKey:kParseCreatedAtKey])
+        _createdAt  =   [[[self class] parseSDKDateFormatter] dateFromString:[result objectForKey:kParseCreatedAtKey]];
+    
+    if ([result objectForKey:kParseUpdatedAtKey])
+        _updatedAt  =   [[[self class] parseSDKDateFormatter] dateFromString:[result objectForKey:kParseUpdatedAtKey]];
+    
+    _objectId   =   [result objectForKey:kParseObjectIdKey];
+
+    [displayAttributes addEntriesFromDictionary:result];
 }
 
 + (IQ_PFObject *)objectWithClassName:(NSString *)className
@@ -326,8 +339,36 @@
     [displayAttributes setObject:[[self class] incrementAttributeByAmount:amount] forKey:key];
 }
 
-//- (BOOL)save;
-//- (BOOL)save:(NSError **)error;
+- (BOOL)save
+{
+    return [self save:nil];
+}
+
+- (BOOL)save:(NSError **)error
+{
+    NSDictionary *result;
+    
+    if (self.objectId)
+    {
+        result = [[IQPFWebService service] updateObjectWithParseClass:self.parseClassName objectId:self.objectId attributes:needUpdateAttributes error:error];
+    }
+    else
+    {
+        result = [[IQPFWebService service] createObjectWithParseClass:self.parseClassName attributes:needUpdateAttributes error:error];
+    }
+    
+    
+    if (result)
+    {
+        [self handleResult:result];
+        return YES;
+    }
+    else
+    {
+        return NO;
+    }
+}
+
 - (void)saveInBackground
 {
     [self saveInBackgroundWithBlock:NULL];
@@ -337,16 +378,11 @@
 {
     if (self.objectId)
     {
-        [[IQ_PFWebService service] updateObjectWithParseClass:self.parseClassName objectId:self.objectId attributes:needUpdateAttributes completionHandler:^(NSDictionary *result, NSError *error) {
+        [[IQPFWebService service] updateObjectWithParseClass:self.parseClassName objectId:self.objectId attributes:needUpdateAttributes completionHandler:^(NSDictionary *result, NSError *error) {
+            
             if (result)
             {
-                if ([result objectForKey:kParseCreatedAtKey])
-                    _createdAt  =   [[[self class] formatter] dateFromString:[result objectForKey:kParseCreatedAtKey]];
-                
-                if ([result objectForKey:kParseUpdatedAtKey])
-                    _updatedAt  =   [[[self class] formatter] dateFromString:[result objectForKey:kParseUpdatedAtKey]];
-                
-                _objectId   =   [result objectForKey:kParseObjectIdKey];
+                [self handleResult:result];
             }
 
             if (block)
@@ -357,16 +393,10 @@
     }
     else
     {
-        [[IQ_PFWebService service] createObjectWithParseClass:self.parseClassName attributes:needUpdateAttributes completionHandler:^(NSDictionary *result, NSError *error) {
+        [[IQPFWebService service] createObjectWithParseClass:self.parseClassName attributes:needUpdateAttributes completionHandler:^(NSDictionary *result, NSError *error) {
             if (result)
             {
-                if ([result objectForKey:kParseCreatedAtKey])
-                    _createdAt  =   [[[self class] formatter] dateFromString:[result objectForKey:kParseCreatedAtKey]];
-
-                if ([result objectForKey:kParseUpdatedAtKey])
-                    _updatedAt  =   [[[self class] formatter] dateFromString:[result objectForKey:kParseUpdatedAtKey]];
-
-                _objectId   =   [result objectForKey:kParseObjectIdKey];
+                [self handleResult:result];
             }
             
             if (block)
@@ -406,10 +436,49 @@
 //+ (void)deleteAllInBackground:(NSArray *)objects target:(id)target selector:(SEL)selector;
 
 //- (BOOL)isDataAvailable;
-//- (void)refresh;
-//- (void)refresh:(NSError **)error;
-//- (void)refreshInBackgroundWithBlock:(IQ_PFObjectResultBlock)block
-//- (void)refreshInBackgroundWithTarget:(id)target selector:(SEL)selector;
+- (void)refresh
+{
+    [self refresh:nil];
+}
+
+- (void)refresh:(NSError **)error
+{
+    NSDictionary *result = [[IQPFWebService service] objectsWithParseClass:self.parseClassName urlParameter:nil objectId:self.objectId error:error];
+
+    if (result)
+    {
+        [self handleResult:result];
+    }
+}
+
+- (void)refreshInBackgroundWithBlock:(IQ_PFObjectResultBlock)block
+{
+    [[IQPFWebService service] objectsWithParseClass:self.parseClassName urlParameter:nil objectId:self.objectId completionHandler:^(NSDictionary *result, NSError *error) {
+
+        if (result)
+        {
+            [self handleResult:result];
+        }
+
+        if (block)
+        {
+            block((result!= nil)?self:nil,error);
+        }
+        
+    }];
+}
+
+- (void)refreshInBackgroundWithTarget:(id)target selector:(SEL)selector
+{
+    [self refreshInBackgroundWithBlock:^(IQ_PFObject *object, NSError *error) {
+
+        NSInvocation *invocation = [NSInvocation invocationWithMethodSignature:[target methodSignatureForSelector:selector]];
+        [invocation setArgument:&object atIndex:2];
+        [invocation setArgument:&error atIndex:3];
+        [invocation invoke];
+
+    }];
+}
 
 //- (void)fetch:(NSError **)error;
 //- (IQ_PFObject *)fetchIfNeeded;
@@ -428,8 +497,29 @@
 //+ (void)fetchAllIfNeededInBackground:(NSArray *)objects block:(IQ_PFArrayResultBlock)block;
 //+ (void)fetchAllIfNeededInBackground:(NSArray *)objects target:(id)target selector:(SEL)selector;
 
-//- (BOOL)delete;
-//- (BOOL)delete:(NSError **)error;
+- (BOOL)delete
+{
+    return [self delete:nil];
+}
+
+- (BOOL)delete:(NSError **)error
+{
+    NSDictionary *result = [[IQPFWebService service] deleteObjectWithParseClass:self.parseClassName objectId:self.objectId error:error];
+    
+    if (result)
+    {
+        self.objectId = nil;
+        _parseClassName = nil;
+        [displayAttributes removeAllObjects];
+        [needUpdateAttributes removeAllObjects];
+        return YES;
+    }
+    else
+    {
+        return NO;
+    }
+}
+
 - (void)deleteInBackground
 {
     [self deleteInBackgroundWithBlock:NULL];
@@ -437,7 +527,7 @@
 
 - (void)deleteInBackgroundWithBlock:(IQ_PFBooleanResultBlock)block
 {
-    [[IQ_PFWebService service] deleteObjectWithParseClass:self.parseClassName objectId:self.objectId completionHandler:^(NSDictionary *result, NSError *error) {
+    [[IQPFWebService service] deleteObjectWithParseClass:self.parseClassName objectId:self.objectId completionHandler:^(NSDictionary *result, NSError *error) {
 
         if (result)
         {
@@ -472,10 +562,9 @@
 //- (BOOL)isDirtyForKey:(NSString *)key;
 
 
+//Private methods
 
-
-
-+ (NSDateFormatter *)formatter
++ (NSDateFormatter *)parseSDKDateFormatter
 {
 	NSMutableDictionary *dictionary = [[NSThread currentThread] threadDictionary];
 	NSDateFormatter *formatter = dictionary[@"iso"];
@@ -488,9 +577,6 @@
 	}
 	return formatter;
 }
-
-
-//Private methods
 
 //Increment/Decrement Number Attribute
 +(NSDictionary *)incrementAttribute

@@ -26,11 +26,8 @@
 
 @interface IQURLConnection ()
 {
-    IQDataCompletionBlock         _completion;
-    IQProgressBlock           _uploadProgressBlock;
-    IQProgressBlock           _downloadProgressBlock;
-    IQResponseBlock           _responseBlock;
-    
+    IQDataCompletionBlock   _dataCompletionBlock;
+
     NSMutableData *_data;
 }
 
@@ -64,7 +61,7 @@ static NSOperationQueue *queue;
         [self setDelegateQueue:queue];
         _uploadProgressBlock = *uploadProgress;
         _downloadProgressBlock = *downloadProgress;
-        _completion = *completion;
+        _dataCompletionBlock = *completion;
         _responseBlock = *responseBlock;
         
         _data = [[NSMutableData alloc] init];
@@ -88,7 +85,10 @@ static NSOperationQueue *queue;
         else
         {
             dispatch_sync(dispatch_get_main_queue(), ^{
-                _downloadProgressBlock(progress);
+                if (_downloadProgressBlock)
+                {
+                    _downloadProgressBlock(progress);
+                }
             });
         }
     }
@@ -105,7 +105,10 @@ static NSOperationQueue *queue;
         else
         {
             dispatch_sync(dispatch_get_main_queue(), ^{
-                _uploadProgressBlock(progress);
+                if (_uploadProgressBlock)
+                {
+                    _uploadProgressBlock(progress);
+                }
             });
         }
     }
@@ -113,16 +116,19 @@ static NSOperationQueue *queue;
 
 -(void)sendCompletionData:(NSData*)data error:(NSError*)error
 {
-    if (_completion)
+    if (_dataCompletionBlock)
     {
         if ([NSThread isMainThread])
         {
-            _completion(data,error);
+            _dataCompletionBlock(data,error);
         }
         else
         {
             dispatch_sync(dispatch_get_main_queue(), ^{
-                _completion(data,error);
+                if (_dataCompletionBlock)
+                {
+                    _dataCompletionBlock(data,error);
+                }
             });
         }
     }
@@ -139,7 +145,10 @@ static NSOperationQueue *queue;
         else
         {
             dispatch_sync(dispatch_get_main_queue(), ^{
-                _responseBlock(response);
+                if (_responseBlock)
+                {
+                    _responseBlock(response);
+                }
             });
         }
     }

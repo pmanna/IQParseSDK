@@ -22,8 +22,255 @@
 // THE SOFTWARE.
 
 #import "IQ_PFUser.h"
+#import "IQPFWebService.h"
+
+@interface IQ_PFObject (Subclassing)
+
+-(void)handleResult:(NSDictionary*)result;
+
+@end
+
+@interface IQ_PFUser ()
+
+@property (nonatomic, strong, readwrite) NSDate *updatedAt;
+@property (nonatomic, strong, readwrite) NSDate *createdAt;
+
+@end
 
 @implementation IQ_PFUser
 
+@synthesize updatedAt = _updatedAt, createdAt = _createdAt;
+
++ (NSString *)parseClassName
+{
+    return @"User";
+}
+
+IQ_PFUser *_currentUser;
+
++ (instancetype)currentUser
+{
+    return _currentUser;
+}
+
++(void)setCurrentUser:(IQ_PFUser*)currentUser
+{
+    [[IQPFWebService service] setDefaultHeaderValue:[currentUser sessionToken] forHeaderField:kParse_X_Parse_Session_Token];
+
+    _currentUser = currentUser;
+}
+
+-(void)handleResult:(NSDictionary *)result
+{
+    [super handleResult:result];
+    
+    if ([result objectForKey:kParseSessionTokenKey])
+        self.sessionToken   =   [result objectForKey:kParseSessionTokenKey];
+}
+
+//@property (assign, readonly) BOOL isNew;
+
+//- (BOOL)isAuthenticated;
++ (IQ_PFUser *)user
+{
+    return [[self alloc] init];
+}
+
+//+ (void)enableAutomaticUser;
+
+- (BOOL)signUp
+{
+    return [self signUp:nil];
+}
+
+- (BOOL)signUp:(NSError **)error
+{
+    NSDictionary *userInfo = @{kParseUsernameKey: self.username, kParsePasswordKey:self.password};
+    NSDictionary *result = [[IQPFWebService service] signUpUser:userInfo error:error];
+    
+    if ([result objectForKey:kParseSessionTokenKey])
+    {
+        [self handleResult:result];
+
+        return YES;
+    }
+    else
+    {
+        return NO;
+    }
+}
+
+extern NSString *const kParseUsernameKey;
+extern NSString *const kParsePasswordKey;
+
+- (void)signUpInBackground
+{
+    [self signUpInBackgroundWithBlock:NULL];
+}
+
+- (void)signUpInBackgroundWithBlock:(IQ_PFBooleanResultBlock)block
+{
+    NSDictionary *userInfo = @{kParseUsernameKey: self.username, kParsePasswordKey:self.password};
+
+    [[IQPFWebService service] signUpUser:userInfo completionHandler:^(NSDictionary *result, NSError *error) {
+
+    }];
+}
+
+- (void)signUpInBackgroundWithTarget:(id)target selector:(SEL)selector
+{
+    [self signUpInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
+
+        NSInvocation *invocation = [NSInvocation invocationWithMethodSignature:[target methodSignatureForSelector:selector]];
+        [invocation setArgument:&(succeeded) atIndex:2];
+        [invocation setArgument:&error atIndex:3];
+        [invocation invoke];
+
+    }];
+}
+
++ (instancetype)logInWithUsername:(NSString *)username password:(NSString *)password
+{
+    return [self logInWithUsername:username password:password error:nil];
+}
+
++ (instancetype)logInWithUsername:(NSString *)username password:(NSString *)password error:(NSError **)error
+{
+    NSDictionary *userInfo = @{kParseUsernameKey: username, kParsePasswordKey:password};
+    
+    NSDictionary *result = [[IQPFWebService service] loginUser:userInfo error:error];
+
+    if ([result objectForKey:kParseSessionTokenKey])
+    {
+        IQ_PFUser *user = [[IQ_PFUser alloc] init];
+        [user handleResult:result];
+        
+        [self setCurrentUser:user];
+        
+        return user;
+    }
+    else
+    {
+        return nil;
+    }
+}
+
++ (void)logInWithUsernameInBackground:(NSString *)username password:(NSString *)password
+{
+    [self logInWithUsernameInBackground:username password:password block:NULL];
+}
+
++ (void)logInWithUsernameInBackground:(NSString *)username password:(NSString *)password target:(id)target selector:(SEL)selector
+{
+    [self logInWithUsernameInBackground:username password:password block:^(IQ_PFUser *user, NSError *error) {
+
+        NSInvocation *invocation = [NSInvocation invocationWithMethodSignature:[target methodSignatureForSelector:selector]];
+        [invocation setArgument:&user atIndex:2];
+        [invocation setArgument:&error atIndex:3];
+        [invocation invoke];
+
+    }];
+}
+
++ (void)logInWithUsernameInBackground:(NSString *)username password:(NSString *)password block:(IQ_PFUserResultBlock)block
+{
+    NSDictionary *userInfo = @{kParseUsernameKey: username, kParsePasswordKey:password};
+
+    [[IQPFWebService service] loginUser:userInfo completionHandler:^(NSDictionary *result, NSError *error) {
+
+        IQ_PFUser *user;
+        
+        if ([result objectForKey:kParseSessionTokenKey])
+        {
+            IQ_PFUser *user = [[IQ_PFUser alloc] init];
+            [user handleResult:result];
+
+            [self setCurrentUser:user];
+        }
+
+        if (block)  block(user,error);
+        
+    }];
+}
+
+//+ (instancetype)become:(NSString *)sessionToken;
+//+ (instancetype)become:(NSString *)sessionToken error:(NSError **)error;
+//+ (void)becomeInBackground:(NSString *)sessionToken;
+//+ (void)becomeInBackground:(NSString *)sessionToken target:(id)target selector:(SEL)selector;
+//+ (void)becomeInBackground:(NSString *)sessionToken block:(IQ_PFUserResultBlock)block;
+
++ (void)logOut
+{
+    [self setCurrentUser:nil];
+}
+
++ (BOOL)requestPasswordResetForEmail:(NSString *)email
+{
+    return [self requestPasswordResetForEmail:email error:nil];
+}
+
++ (BOOL)requestPasswordResetForEmail:(NSString *)email error:(NSError **)error
+{
+    NSDictionary *dict = @{kParseEmailKey: email};
+    
+    NSDictionary *result = [[IQPFWebService service] requestPasswordReset:dict error:error];
+    
+    if (result)
+    {
+        return YES;
+    }
+    else
+    {
+        return NO;
+    }
+}
+
++ (void)requestPasswordResetForEmailInBackground:(NSString *)email
+{
+    [self requestPasswordResetForEmailInBackground:email block:NULL];
+}
+
++ (void)requestPasswordResetForEmailInBackground:(NSString *)email target:(id)target selector:(SEL)selector
+{
+    [self requestPasswordResetForEmailInBackground:email block:^(BOOL succeeded, NSError *error) {
+
+        NSInvocation *invocation = [NSInvocation invocationWithMethodSignature:[target methodSignatureForSelector:selector]];
+        [invocation setArgument:&(succeeded) atIndex:2];
+        [invocation setArgument:&error atIndex:3];
+        [invocation invoke];
+
+    }];
+}
+
++ (void)requestPasswordResetForEmailInBackground:(NSString *)email block:(IQ_PFBooleanResultBlock)block
+{
+    NSDictionary *dict = @{kParseEmailKey: email};
+
+    [[IQPFWebService service] requestPasswordReset:dict completionHandler:^(NSDictionary *result, NSError *error) {
+
+        if (result)
+        {
+            if (block)  block(YES,error);
+        }
+        else
+        {
+            if (block)  block(NO,error);
+        }
+
+    }];
+}
+
+//+ (IQ_PFQuery *)query;
 
 @end
+
+
+
+
+
+
+
+
+
+
+

@@ -1,5 +1,5 @@
 //
-//  IQ_PFWebServiceConstants.h
+//  IQPFWebServiceConstants.h
 // https://github.com/hackiftekhar/IQParseSDK
 // Copyright (c) 2013-14 Iftekhar Qurashi.
 //
@@ -26,6 +26,7 @@
 
 extern NSString *const kParse_X_Parse_Application_Id;
 extern NSString *const kParse_X_Parse_REST_API_Key;
+extern NSString *const kParse_X_Parse_Session_Token;
 
 extern NSString *const kParseObjectIdKey;
 
@@ -67,7 +68,10 @@ extern NSString *const kParseAllKey;
 extern NSString *const kParseQueryKey;
 extern NSString *const kParseKeyKey;
 
-
+extern NSString *const kParseUsernameKey;
+extern NSString *const kParsePasswordKey;
+extern NSString *const kParseEmailKey;
+extern NSString *const kParseSessionTokenKey;
 
 
 

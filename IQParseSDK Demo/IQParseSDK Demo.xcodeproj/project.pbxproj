@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		C01992EB19BB9D4300F48F0C /* IQ_PFImageView.m in Sources */ = {isa = PBXBuildFile; fileRef = C01992EA19BB9D4300F48F0C /* IQ_PFImageView.m */; };
 		C0B761EE19BA4AB90071419C /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C0B761ED19BA4AB90071419C /* Foundation.framework */; };
 		C0B761F019BA4AB90071419C /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C0B761EF19BA4AB90071419C /* CoreGraphics.framework */; };
 		C0B761F219BA4AB90071419C /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C0B761F119BA4AB90071419C /* UIKit.framework */; };
@@ -33,8 +34,8 @@
 		C0B7625219BA4BBE0071419C /* IQ_PFRelation.m in Sources */ = {isa = PBXBuildFile; fileRef = C0B7623819BA4BBE0071419C /* IQ_PFRelation.m */; };
 		C0B7625319BA4BBE0071419C /* IQ_PFRole.m in Sources */ = {isa = PBXBuildFile; fileRef = C0B7623A19BA4BBE0071419C /* IQ_PFRole.m */; };
 		C0B7625419BA4BBE0071419C /* IQ_PFUser.m in Sources */ = {isa = PBXBuildFile; fileRef = C0B7623C19BA4BBE0071419C /* IQ_PFUser.m */; };
-		C0B7625519BA4BBE0071419C /* IQ_PFWebService.m in Sources */ = {isa = PBXBuildFile; fileRef = C0B7623F19BA4BBE0071419C /* IQ_PFWebService.m */; };
-		C0B7625619BA4BBE0071419C /* IQ_PFWebServiceConstants.m in Sources */ = {isa = PBXBuildFile; fileRef = C0B7624119BA4BBE0071419C /* IQ_PFWebServiceConstants.m */; };
+		C0B7625519BA4BBE0071419C /* IQPFWebService.m in Sources */ = {isa = PBXBuildFile; fileRef = C0B7623F19BA4BBE0071419C /* IQPFWebService.m */; };
+		C0B7625619BA4BBE0071419C /* IQPFWebServiceConstants.m in Sources */ = {isa = PBXBuildFile; fileRef = C0B7624119BA4BBE0071419C /* IQPFWebServiceConstants.m */; };
 		C0B7625719BA4BBE0071419C /* IQURLConnection.m in Sources */ = {isa = PBXBuildFile; fileRef = C0B7624419BA4BBE0071419C /* IQURLConnection.m */; };
 		C0B7625819BA4BBE0071419C /* IQWebService.m in Sources */ = {isa = PBXBuildFile; fileRef = C0B7624719BA4BBE0071419C /* IQWebService.m */; };
 		C0B7625919BA4BBE0071419C /* IQWebServiceConstants.m in Sources */ = {isa = PBXBuildFile; fileRef = C0B7624919BA4BBE0071419C /* IQWebServiceConstants.m */; };
@@ -51,6 +52,8 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		C01992E919BB9D4300F48F0C /* IQ_PFImageView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IQ_PFImageView.h; sourceTree = "<group>"; };
+		C01992EA19BB9D4300F48F0C /* IQ_PFImageView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = IQ_PFImageView.m; sourceTree = "<group>"; };
 		C0B761EA19BA4AB90071419C /* IQParseSDK Demo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "IQParseSDK Demo.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		C0B761ED19BA4AB90071419C /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		C0B761EF19BA4AB90071419C /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
@@ -93,10 +96,10 @@
 		C0B7623A19BA4BBE0071419C /* IQ_PFRole.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = IQ_PFRole.m; sourceTree = "<group>"; };
 		C0B7623B19BA4BBE0071419C /* IQ_PFUser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IQ_PFUser.h; sourceTree = "<group>"; };
 		C0B7623C19BA4BBE0071419C /* IQ_PFUser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = IQ_PFUser.m; sourceTree = "<group>"; };
-		C0B7623E19BA4BBE0071419C /* IQ_PFWebService.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IQ_PFWebService.h; sourceTree = "<group>"; };
-		C0B7623F19BA4BBE0071419C /* IQ_PFWebService.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = IQ_PFWebService.m; sourceTree = "<group>"; };
-		C0B7624019BA4BBE0071419C /* IQ_PFWebServiceConstants.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IQ_PFWebServiceConstants.h; sourceTree = "<group>"; };
-		C0B7624119BA4BBE0071419C /* IQ_PFWebServiceConstants.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = IQ_PFWebServiceConstants.m; sourceTree = "<group>"; };
+		C0B7623E19BA4BBE0071419C /* IQPFWebService.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IQPFWebService.h; sourceTree = "<group>"; };
+		C0B7623F19BA4BBE0071419C /* IQPFWebService.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = IQPFWebService.m; sourceTree = "<group>"; };
+		C0B7624019BA4BBE0071419C /* IQPFWebServiceConstants.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IQPFWebServiceConstants.h; sourceTree = "<group>"; };
+		C0B7624119BA4BBE0071419C /* IQPFWebServiceConstants.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = IQPFWebServiceConstants.m; sourceTree = "<group>"; };
 		C0B7624319BA4BBE0071419C /* IQURLConnection.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IQURLConnection.h; sourceTree = "<group>"; };
 		C0B7624419BA4BBE0071419C /* IQURLConnection.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = IQURLConnection.m; sourceTree = "<group>"; };
 		C0B7624619BA4BBE0071419C /* IQWebService.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IQWebService.h; sourceTree = "<group>"; };
@@ -229,6 +232,8 @@
 				C0B7623019BA4BBE0071419C /* IQ_PFFile.m */,
 				C0B7623119BA4BBE0071419C /* IQ_PFGeoPoint.h */,
 				C0B7623219BA4BBE0071419C /* IQ_PFGeoPoint.m */,
+				C01992E919BB9D4300F48F0C /* IQ_PFImageView.h */,
+				C01992EA19BB9D4300F48F0C /* IQ_PFImageView.m */,
 				C0B7623319BA4BBE0071419C /* IQ_PFObject.h */,
 				C0B7623419BA4BBE0071419C /* IQ_PFObject.m */,
 				C0B7623519BA4BBE0071419C /* IQ_PFQuery.h */,
@@ -246,10 +251,10 @@
 		C0B7623D19BA4BBE0071419C /* ParseRestAPI */ = {
 			isa = PBXGroup;
 			children = (
-				C0B7623E19BA4BBE0071419C /* IQ_PFWebService.h */,
-				C0B7623F19BA4BBE0071419C /* IQ_PFWebService.m */,
-				C0B7624019BA4BBE0071419C /* IQ_PFWebServiceConstants.h */,
-				C0B7624119BA4BBE0071419C /* IQ_PFWebServiceConstants.m */,
+				C0B7623E19BA4BBE0071419C /* IQPFWebService.h */,
+				C0B7623F19BA4BBE0071419C /* IQPFWebService.m */,
+				C0B7624019BA4BBE0071419C /* IQPFWebServiceConstants.h */,
+				C0B7624119BA4BBE0071419C /* IQPFWebServiceConstants.m */,
 				C0B7624219BA4BBE0071419C /* IQURLConnection */,
 				C0B7624519BA4BBE0071419C /* IQWebService */,
 			);
@@ -376,7 +381,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				C0B7625719BA4BBE0071419C /* IQURLConnection.m in Sources */,
-				C0B7625619BA4BBE0071419C /* IQ_PFWebServiceConstants.m in Sources */,
+				C0B7625619BA4BBE0071419C /* IQPFWebServiceConstants.m in Sources */,
 				C0B761FE19BA4AB90071419C /* IQAppDelegate.m in Sources */,
 				C0B7624A19BA4BBE0071419C /* IQ_Parse.m in Sources */,
 				C0B7625419BA4BBE0071419C /* IQ_PFUser.m in Sources */,
@@ -387,10 +392,11 @@
 				C0B7624B19BA4BBE0071419C /* IQ_PFACL.m in Sources */,
 				C0B7625119BA4BBE0071419C /* IQ_PFQuery.m in Sources */,
 				C0B7625019BA4BBE0071419C /* IQ_PFObject.m in Sources */,
+				C01992EB19BB9D4300F48F0C /* IQ_PFImageView.m in Sources */,
 				C0B7624E19BA4BBE0071419C /* IQ_PFFile.m in Sources */,
 				C0B7625819BA4BBE0071419C /* IQWebService.m in Sources */,
 				C0B7625319BA4BBE0071419C /* IQ_PFRole.m in Sources */,
-				C0B7625519BA4BBE0071419C /* IQ_PFWebService.m in Sources */,
+				C0B7625519BA4BBE0071419C /* IQPFWebService.m in Sources */,
 				C0B7620719BA4AB90071419C /* IQViewController.m in Sources */,
 				C0B7624C19BA4BBE0071419C /* IQ_PFCloud.m in Sources */,
 				C0B7625219BA4BBE0071419C /* IQ_PFRelation.m in Sources */,

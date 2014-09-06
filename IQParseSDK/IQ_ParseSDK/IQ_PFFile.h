@@ -39,8 +39,8 @@
 
 //@property (nonatomic, assign, readonly) BOOL isDirty;
 
-//- (BOOL)save;
-//- (BOOL)save:(NSError **)error;
+- (BOOL)save;
+- (BOOL)save:(NSError **)error;
 - (void)saveInBackground;
 - (void)saveInBackgroundWithBlock:(IQ_PFBooleanResultBlock)block;
 - (void)saveInBackgroundWithBlock:(IQ_PFBooleanResultBlock)block progressBlock:(IQ_PFProgressBlock)progressBlock;
@@ -50,7 +50,7 @@
 
 - (NSData *)getData;
 //- (NSInputStream *)getDataStream;
-//- (NSData *)getData:(NSError **)error;
+- (NSData *)getData:(NSError **)error;
 //- (NSInputStream *)getDataStream:(NSError **)error;
 - (void)getDataInBackgroundWithBlock:(IQ_PFDataResultBlock)block;
 //- (void)getDataStreamInBackgroundWithBlock:(IQ_PFDataStreamResultBlock)block;

@@ -25,4 +25,43 @@
 
 @implementation IQ_PFGeoPoint
 
++ (IQ_PFGeoPoint *)geoPoint
+{
+    return [self geoPointWithLatitude:0 longitude:0];
+}
+
++ (IQ_PFGeoPoint *)geoPointWithLocation:(CLLocation *)location
+{
+    return [self geoPointWithLatitude:location.coordinate.latitude longitude:location.coordinate.longitude];
+}
+
++ (IQ_PFGeoPoint *)geoPointWithLatitude:(double)latitude longitude:(double)longitude
+{
+    IQ_PFGeoPoint *geoPoint = [[self alloc] init];
+    geoPoint.latitude = latitude;
+    geoPoint.longitude = longitude;
+
+    return geoPoint;
+}
+
+//+ (void)geoPointForCurrentLocationInBackground:(void(^)(IQ_PFGeoPoint *geoPoint, NSError *error))geoPointHandler
+
+//- (double)distanceInRadiansTo:(IQ_PFGeoPoint*)point
+
+- (double)distanceInMilesTo:(IQ_PFGeoPoint*)point
+{
+    CLLocation *myLocation = [[CLLocation alloc] initWithLatitude:self.latitude longitude:self.longitude];
+    CLLocation *otherLocation = [[CLLocation alloc] initWithLatitude:point.latitude longitude:point.longitude];
+    
+    return [myLocation distanceFromLocation:otherLocation]/1609.34;
+}
+
+- (double)distanceInKilometersTo:(IQ_PFGeoPoint*)point
+{
+    CLLocation *myLocation = [[CLLocation alloc] initWithLatitude:self.latitude longitude:self.longitude];
+    CLLocation *otherLocation = [[CLLocation alloc] initWithLatitude:point.latitude longitude:point.longitude];
+    
+    return [myLocation distanceFromLocation:otherLocation]/1000.0;
+}
+
 @end

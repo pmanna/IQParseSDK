@@ -22,7 +22,7 @@
 // THE SOFTWARE.
 
 #import "IQ_PFFile.h"
-#import "IQ_PFWebService.h"
+#import "IQPFWebService.h"
 #import "IQURLConnection.h"
 #import <Foundation/NSData.h>
 #import <Foundation/NSDictionary.h>
@@ -58,6 +58,12 @@
     return self;
 }
 
+-(void)handleResult:(NSDictionary*)result
+{
+    _url = [result objectForKey:kParseUrlKey];
+    _name = [result objectForKey:kParseNameKey];
+}
+
 //+ (instancetype)fileWithData:(NSData *)data;
 //+ (instancetype)fileWithName:(NSString *)name data:(NSData *)data;
 //+ (instancetype)fileWithName:(NSString *)name contentsAtPath:(NSString *)path;
@@ -72,8 +78,25 @@
     return [[self alloc] initWithfileName:nil data:data contentType:contentType];
 }
 
-//- (BOOL)save;
-//- (BOOL)save:(NSError **)error;
+- (BOOL)save
+{
+    return [self save:nil];
+}
+
+- (BOOL)save:(NSError **)error
+{
+    NSDictionary *result = [[IQPFWebService service] saveFileData:_data fileName:self.name contentType:_contentType error:error];
+    
+    if (result)
+    {
+        [self handleResult:result];
+        return YES;
+    }
+    else
+    {
+        return NO;
+    }
+}
 
 - (void)saveInBackground
 {
@@ -87,7 +110,7 @@
 
 - (void)saveInBackgroundWithBlock:(IQ_PFBooleanResultBlock)block progressBlock:(IQ_PFProgressBlock)progressBlock
 {
-    IQURLConnection *connection = [[IQ_PFWebService service] saveFileData:_data fileName:self.name contentType:_contentType uploadProgressBlock:^(CGFloat progress) {
+    IQURLConnection *connection = [[IQPFWebService service] saveFileData:_data fileName:self.name contentType:_contentType uploadProgressBlock:^(CGFloat progress) {
         
         if (progressBlock)
         {
@@ -100,8 +123,7 @@
         
         if (result)
         {
-            _url = [result objectForKey:kParseUrlKey];
-            _name = [result objectForKey:kParseNameKey];
+            [self handleResult:result];
         }
         
         block(result!=nil, error);
@@ -129,11 +151,21 @@
 
 - (NSData *)getData
 {
-    return _data;
+    return [self getData:nil];
 }
 
 //- (NSInputStream *)getDataStream;
-//- (NSData *)getData:(NSError **)error;
+
+- (NSData *)getData:(NSError **)error
+{
+    if (_data == nil)
+    {
+        _data = [[IQPFWebService service] getDataWithFileUrl:[NSURL URLWithString:_url] error:error];
+    }
+
+    return _data;
+}
+
 //- (NSInputStream *)getDataStream:(NSError **)error;
 
 - (void)getDataInBackgroundWithBlock:(IQ_PFDataResultBlock)block
@@ -145,7 +177,7 @@
 
 - (void)getDataInBackgroundWithBlock:(IQ_PFDataResultBlock)resultBlock progressBlock:(IQ_PFProgressBlock)progressBlock
 {
-    IQURLConnection *connection = [[IQ_PFWebService service] getDataWithFileUrl:[NSURL URLWithString:_url] downloadProgressBlock:^(CGFloat progress) {
+    IQURLConnection *connection = [[IQPFWebService service] getDataWithFileUrl:[NSURL URLWithString:_url] downloadProgressBlock:^(CGFloat progress) {
 
         if (progressBlock)
         {

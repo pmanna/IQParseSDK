@@ -60,8 +60,8 @@
 - (void)incrementKey:(NSString *)key;
 - (void)incrementKey:(NSString *)key byAmount:(NSNumber *)amount;
 
-//- (BOOL)save;
-//- (BOOL)save:(NSError **)error;
+- (BOOL)save;
+- (BOOL)save:(NSError **)error;
 - (void)saveInBackground;
 - (void)saveInBackgroundWithBlock:(IQ_PFBooleanResultBlock)block;
 - (void)saveInBackgroundWithTarget:(id)target selector:(SEL)selector;
@@ -81,10 +81,10 @@
 //+ (void)deleteAllInBackground:(NSArray *)objects target:(id)target selector:(SEL)selector;
 
 //- (BOOL)isDataAvailable;
-//- (void)refresh;
-//- (void)refresh:(NSError **)error;
-//- (void)refreshInBackgroundWithBlock:(IQ_PFObjectResultBlock)block;
-//- (void)refreshInBackgroundWithTarget:(id)target selector:(SEL)selector;
+- (void)refresh;
+- (void)refresh:(NSError **)error;
+- (void)refreshInBackgroundWithBlock:(IQ_PFObjectResultBlock)block;
+- (void)refreshInBackgroundWithTarget:(id)target selector:(SEL)selector;
 
 //- (void)fetch:(NSError **)error;
 //- (IQ_PFObject *)fetchIfNeeded;
@@ -103,8 +103,8 @@
 //+ (void)fetchAllIfNeededInBackground:(NSArray *)objects block:(IQ_PFArrayResultBlock)block;
 //+ (void)fetchAllIfNeededInBackground:(NSArray *)objects target:(id)target selector:(SEL)selector;
 
-//- (BOOL)delete;
-//- (BOOL)delete:(NSError **)error;
+- (BOOL)delete;
+- (BOOL)delete:(NSError **)error;
 - (void)deleteInBackground;
 - (void)deleteInBackgroundWithBlock:(IQ_PFBooleanResultBlock)block;
 - (void)deleteInBackgroundWithTarget:(id)target selector:(SEL)selector;
@@ -112,5 +112,7 @@
 
 //- (BOOL)isDirty;
 //- (BOOL)isDirtyForKey:(NSString *)key;
+
++ (NSDateFormatter *)parseSDKDateFormatter;
 
 @end

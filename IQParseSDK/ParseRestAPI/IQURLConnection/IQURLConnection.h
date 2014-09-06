@@ -29,13 +29,17 @@
 @interface IQURLConnection : NSURLConnection
 
 @property(nonatomic, strong, readonly) NSHTTPURLResponse *response;
-@property(nonatomic, readonly) NSData *responseData;
-//@property(nonatomic, assign, readonly) CGFloat downloadProgress;
-//@property(nonatomic, assign, readonly) CGFloat uploadProgress;
+@property(nonatomic, assign, readonly) CGFloat downloadProgress;
+@property(nonatomic, assign, readonly) CGFloat uploadProgress;
+@property(nonatomic, strong, readonly) NSData *responseData;
+
+@property(nonatomic, strong) IQProgressBlock         uploadProgressBlock;
+@property(nonatomic, strong) IQProgressBlock         downloadProgressBlock;
+@property(nonatomic, strong) IQResponseBlock         responseBlock;
+
 
 //It automatically fires `start` method.
-+ (IQURLConnection*)sendAsynchronousRequest:(NSURLRequest *)request responseBlock:(IQResponseBlock)responseBlock uploadProgressBlock:(IQProgressBlock)uploadProgress downloadProgressBlock:(IQProgressBlock)downloadProgress completionHandler:(IQDataCompletionBlock)completion;
-
++ (instancetype)sendAsynchronousRequest:(NSURLRequest *)request responseBlock:(IQResponseBlock)responseBlock uploadProgressBlock:(IQProgressBlock)uploadProgress downloadProgressBlock:(IQProgressBlock)downloadProgress completionHandler:(IQDataCompletionBlock)completion;
 
 - (instancetype)initWithRequest:(NSURLRequest *)request responseBlock:(IQResponseBlock*)responseBlock uploadProgressBlock:(IQProgressBlock*)uploadProgress downloadProgressBlock:(IQProgressBlock*)downloadProgress completionBlock:(IQDataCompletionBlock*)completion;
 

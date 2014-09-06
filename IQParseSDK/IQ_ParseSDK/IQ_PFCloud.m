@@ -22,17 +22,54 @@
 // THE SOFTWARE.
 
 #import "IQ_PFCloud.h"
-#import "IQ_PFWebService.h"
+#import "IQPFWebService.h"
 
 @implementation IQ_PFCloud
 
++ (id)callFunction:(NSString *)function withParameters:(NSDictionary *)parameters
+{
+    return [self callFunction:function withParameters:parameters error:nil];
+}
+
++ (id)callFunction:(NSString *)function withParameters:(NSDictionary *)parameters error:(NSError **)error
+{
+    NSData *result = [[IQPFWebService service] callFunction:function withParameters:parameters error:error];
+
+    NSDictionary *jsonResponse;
+    NSString *string;
+    
+    if ((jsonResponse = [NSJSONSerialization JSONObjectWithData:result options:0 error:0]))
+    {
+        return jsonResponse;
+    }
+    else if ((string = [[NSString alloc] initWithData:result encoding:NSUTF8StringEncoding]))
+    {
+        return string;
+    }
+    else
+    {
+        return result;
+    }
+}
+
 + (void)callFunctionInBackground:(NSString *)function withParameters:(NSDictionary *)parameters block:(IQ_PFIdResultBlock)block
 {
-    [[IQ_PFWebService service] callFunction:function withParameters:parameters completionHandler:^(NSDictionary *result, NSError *error) {
+    [[IQPFWebService service] callFunction:function withParameters:parameters completionHandler:^(NSData *result, NSError *error) {
         
-        if (block)
+        NSDictionary *jsonResponse;
+        NSString *string;
+        
+        if ((jsonResponse = [NSJSONSerialization JSONObjectWithData:result options:0 error:0]))
         {
-            block(result, error);
+            if (block)  block(jsonResponse, error);
+        }
+        else if ((string = [[NSString alloc] initWithData:result encoding:NSUTF8StringEncoding]))
+        {
+            if (block)  block(string, error);
+        }
+        else
+        {
+            if (block)  block(result,error);
         }
     }];
 }

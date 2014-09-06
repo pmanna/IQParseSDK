@@ -22,7 +22,7 @@
 // THE SOFTWARE.
 
 #import "IQ_PFQuery.h"
-#import "IQ_PFWebService.h"
+#import "IQPFWebService.h"
 #import "IQ_PFObject.h"
 #import "IQURLConnection.h"
 
@@ -51,6 +51,28 @@
     {
         [_queryDictionary setObject:queryDict forKey:key];
     }
+}
+
+-(NSDictionary*)generateParseQuery
+{
+    NSMutableDictionary *queryDict = [[NSMutableDictionary alloc] initWithObjectsAndKeys:_queryDictionary,kParseWhereKey, nil];
+    
+    if (self.limit >=0)
+    {
+        [queryDict setObject:[NSNumber numberWithInteger:self.limit] forKey:kParseLimitKey];
+    }
+    
+    if (self.skip > 0)
+    {
+        [queryDict setObject:[NSNumber numberWithInteger:self.skip] forKey:kParseSkipKey];
+    }
+    
+    if ([_orderByString length])
+    {
+        [queryDict setObject:_orderByString forKey:kParseOrderKey];
+    }
+
+    return queryDict;
 }
 
 - (instancetype)init
@@ -192,22 +214,51 @@
 }
 
 //- (void)orderBySortDescriptor:(NSSortDescriptor *)sortDescriptor;
-//
-//+ (IQ_PFObject *)getObjectOfClass:(NSString *)objectClass objectId:(NSString *)objectId;
-//+ (IQ_PFObject *)getObjectOfClass:(NSString *)objectClass objectId:(NSString *)objectId error:(NSError **)error;
-//- (IQ_PFObject *)getObjectWithId:(NSString *)objectId;
-//- (IQ_PFObject *)getObjectWithId:(NSString *)objectId error:(NSError **)error;
+
++ (IQ_PFObject *)getObjectOfClass:(NSString *)objectClass objectId:(NSString *)objectId
+{
+    return [self getObjectOfClass:objectClass objectId:objectId error:nil];
+}
+
++ (IQ_PFObject *)getObjectOfClass:(NSString *)objectClass objectId:(NSString *)objectId error:(NSError **)error
+{
+    NSDictionary *result = [[IQPFWebService service] objectsWithParseClass:objectClass urlParameter:nil objectId:objectId error:error];
+    
+    IQ_PFObject *object;
+    
+    if (result)
+    {
+        object = [IQ_PFObject objectWithClassName:objectClass dictionary:result];
+    }
+    
+    return object;
+}
+
+- (IQ_PFObject *)getObjectWithId:(NSString *)objectId
+{
+    return [self getObjectWithId:objectId error:nil];
+}
+
+- (IQ_PFObject *)getObjectWithId:(NSString *)objectId error:(NSError **)error
+{
+    return [[self class] getObjectOfClass:self.parseClassName objectId:objectId error:error];
+}
 
 - (void)getObjectInBackgroundWithId:(NSString *)objectId block:(IQ_PFObjectResultBlock)block
 {
-    IQURLConnection *connection = [[IQ_PFWebService service] objectsWithParseClass:self.parseClassName urlParameter:nil objectId:objectId completionHandler:^(NSDictionary *result, NSError *error) {
+    IQURLConnection *connection = [[IQPFWebService service] objectsWithParseClass:self.parseClassName urlParameter:nil objectId:objectId completionHandler:^(NSDictionary *result, NSError *error) {
 
         [connectionSet removeObject:connection];
 
+        IQ_PFObject *object;
+        
+        if (result)
+        {
+            object = [IQ_PFObject objectWithClassName:self.parseClassName dictionary:result];
+        }
+        
         if (block)
         {
-            IQ_PFObject *object = [IQ_PFObject objectWithClassName:self.parseClassName dictionary:result];
-            
             block(object,error);
         }
     }];
@@ -228,30 +279,22 @@
 
 //+ (IQ_PFUser *)getUserObjectWithId:(NSString *)objectId;
 //+ (IQ_PFUser *)getUserObjectWithId:(NSString *)objectId error:(NSError **)error;
-//
-//- (NSArray *)findObjects;
-//- (NSArray *)findObjects:(NSError **)error;
+
+- (NSArray *)findObjects
+{
+    return [self findObjects:nil];
+}
+
+- (NSArray *)findObjects:(NSError **)error
+{
+    NSDictionary *result = [[IQPFWebService service] queryWithParseClass:self.parseClassName query:[self generateParseQuery] error:error];
+    
+    return [result objectForKey:kParseResultsKey];
+}
 
 - (void)findObjectsInBackgroundWithBlock:(IQ_PFArrayResultBlock)block
 {
-    NSMutableDictionary *queryDict = [[NSMutableDictionary alloc] initWithObjectsAndKeys:_queryDictionary,kParseWhereKey, nil];
-    
-    if (self.limit >=0)
-    {
-        [queryDict setObject:[NSNumber numberWithInteger:self.limit] forKey:kParseLimitKey];
-    }
-    
-    if (self.skip > 0)
-    {
-        [queryDict setObject:[NSNumber numberWithInteger:self.skip] forKey:kParseSkipKey];
-    }
-    
-    if ([_orderByString length])
-    {
-        [queryDict setObject:_orderByString forKey:kParseOrderKey];
-    }
-    
-    IQURLConnection *connection = [[IQ_PFWebService service] queryWithParseClass:self.parseClassName query:queryDict completionHandler:^(NSDictionary *result, NSError *error) {
+    IQURLConnection *connection = [[IQPFWebService service] queryWithParseClass:self.parseClassName query:[self generateParseQuery] completionHandler:^(NSDictionary *result, NSError *error) {
 
         [connectionSet removeObject:connection];
 
@@ -276,23 +319,46 @@
     }];
 }
 
-//- (IQ_PFObject *)getFirstObject;
-//- (IQ_PFObject *)getFirstObject:(NSError **)error;
+- (IQ_PFObject *)getFirstObject
+{
+    return [self getFirstObject:nil];
+}
+
+- (IQ_PFObject *)getFirstObject:(NSError **)error
+{
+    NSDictionary *queryDict = @{kParseWhereKey: _queryDictionary,kParseSkipKey:@(self.skip),kParseLimitKey:@1};
+
+    NSDictionary *result = [[IQPFWebService service] queryWithParseClass:self.parseClassName query:queryDict error:error];
+    
+    IQ_PFObject *object;
+
+    if (result)
+    {
+        NSDictionary *objectDict = [[result objectForKey:kParseResultsKey] firstObject];
+        object = [IQ_PFObject objectWithClassName:self.parseClassName dictionary:objectDict];
+    }
+    
+    return object;
+}
 
 - (void)getFirstObjectInBackgroundWithBlock:(IQ_PFObjectResultBlock)block
 {
     NSDictionary *queryDict = @{kParseWhereKey: _queryDictionary,kParseSkipKey:@(self.skip),kParseLimitKey:@1};
 
-    IQURLConnection *connection = [[IQ_PFWebService service] queryWithParseClass:self.parseClassName query:queryDict completionHandler:^(NSDictionary *result, NSError *error) {
+    IQURLConnection *connection = [[IQPFWebService service] queryWithParseClass:self.parseClassName query:queryDict completionHandler:^(NSDictionary *result, NSError *error) {
         
         [connectionSet removeObject:connection];
 
-        if (block)
+        IQ_PFObject *object;
+        
+        if (result)
         {
             NSDictionary *objectDict = [[result objectForKey:kParseResultsKey] firstObject];
-            
-            IQ_PFObject *object = [IQ_PFObject objectWithClassName:self.parseClassName dictionary:objectDict];
-            
+            object = [IQ_PFObject objectWithClassName:self.parseClassName dictionary:objectDict];
+        }
+
+        if (block)
+        {
             block(object,error);
         }
     }];
@@ -312,14 +378,25 @@
     }];
 }
 
-//- (NSInteger)countObjects;
-//- (NSInteger)countObjects:(NSError **)error;
+- (NSInteger)countObjects
+{
+    return [self countObjects:nil];
+}
+
+- (NSInteger)countObjects:(NSError **)error
+{
+    NSDictionary *queryDict = @{kParseWhereKey: _queryDictionary,kParseCountKey:@(YES),kParseSkipKey:@(self.skip),kParseLimitKey:@0};
+
+    NSDictionary *result = [[IQPFWebService service] queryWithParseClass:self.parseClassName query:queryDict error:error];
+
+    return [[result objectForKey:kParseCountKey] intValue];
+}
 
 - (void)countObjectsInBackgroundWithBlock:(IQ_PFIntegerResultBlock)block
 {
     NSDictionary *queryDict = @{kParseWhereKey: _queryDictionary,kParseCountKey:@(YES),kParseSkipKey:@(self.skip),kParseLimitKey:@0};
 
-    IQURLConnection *connection = [[IQ_PFWebService service] queryWithParseClass:self.parseClassName query:queryDict completionHandler:^(NSDictionary *result, NSError *error) {
+    IQURLConnection *connection = [[IQPFWebService service] queryWithParseClass:self.parseClassName query:queryDict completionHandler:^(NSDictionary *result, NSError *error) {
         
         [connectionSet removeObject:connection];
 
@@ -339,7 +416,7 @@
         NSNumber *countNumber = [NSNumber numberWithInt:number];
         
         NSInvocation *invocation = [NSInvocation invocationWithMethodSignature:[target methodSignatureForSelector:selector]];
-        [invocation setArgument:&countNumber atIndex:2];
+        [invocation setArgument:&(countNumber) atIndex:2];
         [invocation setArgument:&error atIndex:3];
         [invocation invoke];
     }];

@@ -63,33 +63,33 @@
 //- (void)whereKey:(NSString *)key doesNotMatchKey:(NSString *)otherKey inQuery:(IQ_PFQuery *)query;
 //- (void)whereKey:(NSString *)key matchesQuery:(IQ_PFQuery *)query;
 //- (void)whereKey:(NSString *)key doesNotMatchQuery:(IQ_PFQuery *)query;
-//
+
 - (void)orderByAscending:(NSString *)key;
 - (void)addAscendingOrder:(NSString *)key;
 - (void)orderByDescending:(NSString *)key;
 - (void)addDescendingOrder:(NSString *)key;
 //- (void)orderBySortDescriptor:(NSSortDescriptor *)sortDescriptor;
-//
-//+ (IQ_PFObject *)getObjectOfClass:(NSString *)objectClass objectId:(NSString *)objectId;
-//+ (IQ_PFObject *)getObjectOfClass:(NSString *)objectClass objectId:(NSString *)objectId error:(NSError **)error;
-//- (IQ_PFObject *)getObjectWithId:(NSString *)objectId;
-//- (IQ_PFObject *)getObjectWithId:(NSString *)objectId error:(NSError **)error;
+
++ (IQ_PFObject *)getObjectOfClass:(NSString *)objectClass objectId:(NSString *)objectId;
++ (IQ_PFObject *)getObjectOfClass:(NSString *)objectClass objectId:(NSString *)objectId error:(NSError **)error;
+- (IQ_PFObject *)getObjectWithId:(NSString *)objectId;
+- (IQ_PFObject *)getObjectWithId:(NSString *)objectId error:(NSError **)error;
 - (void)getObjectInBackgroundWithId:(NSString *)objectId block:(IQ_PFObjectResultBlock)block;
 - (void)getObjectInBackgroundWithId:(NSString *)objectId target:(id)target selector:(SEL)selector;
 //+ (IQ_PFUser *)getUserObjectWithId:(NSString *)objectId;
 //+ (IQ_PFUser *)getUserObjectWithId:(NSString *)objectId error:(NSError **)error;
-//
-//- (NSArray *)findObjects;
-//- (NSArray *)findObjects:(NSError **)error;
+
+- (NSArray *)findObjects;
+- (NSArray *)findObjects:(NSError **)error;
 - (void)findObjectsInBackgroundWithBlock:(IQ_PFArrayResultBlock)block;
 - (void)findObjectsInBackgroundWithTarget:(id)target selector:(SEL)selector;
-//- (IQ_PFObject *)getFirstObject;
-//- (IQ_PFObject *)getFirstObject:(NSError **)error;
+- (IQ_PFObject *)getFirstObject;
+- (IQ_PFObject *)getFirstObject:(NSError **)error;
 - (void)getFirstObjectInBackgroundWithBlock:(IQ_PFObjectResultBlock)block;
 - (void)getFirstObjectInBackgroundWithTarget:(id)target selector:(SEL)selector;
 
-//- (NSInteger)countObjects;
-//- (NSInteger)countObjects:(NSError **)error;
+- (NSInteger)countObjects;
+- (NSInteger)countObjects:(NSError **)error;
 - (void)countObjectsInBackgroundWithBlock:(IQ_PFIntegerResultBlock)block;
 - (void)countObjectsInBackgroundWithTarget:(id)target selector:(SEL)selector;
 
