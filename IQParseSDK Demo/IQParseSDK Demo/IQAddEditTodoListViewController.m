@@ -35,7 +35,7 @@
     
     isPicChanged = NO;
 
-    dropDownCategory.itemList = @[@"Category1",@"Category2",@"Category3"];
+    dropDownCategory.itemList = @[@"Home",@"Work",@"Entertainment"];
     dropDownDate.dropDownMode = IQDropDownModeDatePicker;
 }
 

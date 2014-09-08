@@ -26,6 +26,7 @@
 		C01992EB19BB9D4300F48F0C /* IQ_PFImageView.m in Sources */ = {isa = PBXBuildFile; fileRef = C01992EA19BB9D4300F48F0C /* IQ_PFImageView.m */; };
 		C028AB8219BE223D005EE415 /* UIImage+Resize.m in Sources */ = {isa = PBXBuildFile; fileRef = C028AB8119BE223D005EE415 /* UIImage+Resize.m */; };
 		C028AB8619BE3F76005EE415 /* IQ_Base64.m in Sources */ = {isa = PBXBuildFile; fileRef = C028AB8519BE3F76005EE415 /* IQ_Base64.m */; };
+		C028AB8B19BE5409005EE415 /* IQShadowView.m in Sources */ = {isa = PBXBuildFile; fileRef = C028AB8A19BE5409005EE415 /* IQShadowView.m */; };
 		C0B761EE19BA4AB90071419C /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C0B761ED19BA4AB90071419C /* Foundation.framework */; };
 		C0B761F019BA4AB90071419C /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C0B761EF19BA4AB90071419C /* CoreGraphics.framework */; };
 		C0B761F219BA4AB90071419C /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C0B761F119BA4AB90071419C /* UIKit.framework */; };
@@ -108,6 +109,8 @@
 		C028AB8119BE223D005EE415 /* UIImage+Resize.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIImage+Resize.m"; sourceTree = "<group>"; };
 		C028AB8419BE3F76005EE415 /* IQ_Base64.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IQ_Base64.h; sourceTree = "<group>"; };
 		C028AB8519BE3F76005EE415 /* IQ_Base64.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = IQ_Base64.m; sourceTree = "<group>"; };
+		C028AB8919BE5409005EE415 /* IQShadowView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IQShadowView.h; sourceTree = "<group>"; };
+		C028AB8A19BE5409005EE415 /* IQShadowView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = IQShadowView.m; sourceTree = "<group>"; };
 		C0B761EA19BA4AB90071419C /* IQParseSDK Demo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "IQParseSDK Demo.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		C0B761ED19BA4AB90071419C /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		C0B761EF19BA4AB90071419C /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
@@ -195,6 +198,7 @@
 		C0154E7019BC2FC100F03D64 /* ThirdParty */ = {
 			isa = PBXGroup;
 			children = (
+				C028AB8819BE53FB005EE415 /* ShadowView */,
 				C028AB7F19BE2230005EE415 /* UIImage+Resize */,
 				C0154E7519BC307700F03D64 /* IQKeyBoardManager */,
 				C0154E7119BC2FEC00F03D64 /* IQDropDownTextField */,
@@ -260,6 +264,15 @@
 				C028AB8519BE3F76005EE415 /* IQ_Base64.m */,
 			);
 			path = IQ_Base64;
+			sourceTree = "<group>";
+		};
+		C028AB8819BE53FB005EE415 /* ShadowView */ = {
+			isa = PBXGroup;
+			children = (
+				C028AB8919BE5409005EE415 /* IQShadowView.h */,
+				C028AB8A19BE5409005EE415 /* IQShadowView.m */,
+			);
+			path = ShadowView;
 			sourceTree = "<group>";
 		};
 		C0B761E119BA4AB90071419C = {
@@ -518,6 +531,7 @@
 				C0B7625619BA4BBE0071419C /* IQPFWebServiceConstants.m in Sources */,
 				C0B761FE19BA4AB90071419C /* IQAppDelegate.m in Sources */,
 				C0154E9B19BC307700F03D64 /* IQUIWindow+Hierarchy.m in Sources */,
+				C028AB8B19BE5409005EE415 /* IQShadowView.m in Sources */,
 				C0154E9019BC307700F03D64 /* IQBarButtonItem.m in Sources */,
 				C0B7624A19BA4BBE0071419C /* IQ_Parse.m in Sources */,
 				C0154E9819BC307700F03D64 /* IQToolbar.m in Sources */,

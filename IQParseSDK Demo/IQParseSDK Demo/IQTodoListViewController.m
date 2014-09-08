@@ -38,7 +38,7 @@
 {
     [super viewWillAppear:animated];
     
-    [self.tableView reloadData];
+    [self.refreshControl sendActionsForControlEvents:UIControlEventValueChanged];
 }
 
 -(void)getObjects
