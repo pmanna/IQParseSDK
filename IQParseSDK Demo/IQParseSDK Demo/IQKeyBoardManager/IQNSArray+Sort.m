@@ -1,6 +1,6 @@
 //
-//  IQ_PFRelation.h
-// https://github.com/hackiftekhar/IQParseSDK
+//  NSArray+Sort.m
+// https://github.com/hackiftekhar/IQKeyboardManager
 // Copyright (c) 2013-14 Iftekhar Qurashi.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -21,17 +21,32 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#import <Foundation/Foundation.h>
+#import "IQNSArray+Sort.h"
 
-@class IQ_PFQuery,IQ_PFObject;
+#import <UIKit/UIView.h>
 
-@interface IQ_PFRelation : NSObject
+#import "IQKeyboardManagerConstantsInternal.h"
 
-@property (nonatomic, strong) NSString *targetClass;
+IQ_LoadCategory(IQNSArraySort)
 
-//- (IQ_PFQuery *)query;
 
-//- (void)addObject:(IQ_PFObject *)object;
-//- (void)removeObject:(IQ_PFObject *)object;
+@implementation NSArray (IQ_NSArray_Sort)
+
+- (NSArray*)sortedArrayByTag
+{
+    return [self sortedArrayUsingComparator:^NSComparisonResult(UIView *obj1, UIView *obj2) {
+        
+        if ([obj1 respondsToSelector:@selector(tag)] && [obj2 respondsToSelector:@selector(tag)])
+        {
+            if ([obj1 tag] < [obj2 tag])	return NSOrderedAscending;
+            
+            else if ([obj1 tag] > [obj2 tag])	return NSOrderedDescending;
+            
+            else	return NSOrderedSame;
+        }
+        else
+            return NSOrderedSame;
+    }];
+}
 
 @end

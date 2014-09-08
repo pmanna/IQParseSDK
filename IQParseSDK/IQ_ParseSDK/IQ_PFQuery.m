@@ -55,7 +55,12 @@
 
 -(NSDictionary*)generateParseQuery
 {
-    NSMutableDictionary *queryDict = [[NSMutableDictionary alloc] initWithObjectsAndKeys:_queryDictionary,kParseWhereKey, nil];
+    NSMutableDictionary *queryDict = [[NSMutableDictionary alloc] init];
+    
+    if ([_queryDictionary count])
+    {
+        [queryDict setObject:_queryDictionary forKey:kParseWhereKey];
+    }
     
     if (self.limit >=0)
     {
@@ -72,7 +77,15 @@
         [queryDict setObject:_orderByString forKey:kParseOrderKey];
     }
 
-    return queryDict;
+    if ([queryDict count])
+    {
+        return queryDict;
+    }
+    else
+    {
+        return nil;
+    }
+    
 }
 
 - (instancetype)init
@@ -246,9 +259,9 @@
 
 - (void)getObjectInBackgroundWithId:(NSString *)objectId block:(IQ_PFObjectResultBlock)block
 {
-    IQURLConnection *connection = [[IQPFWebService service] objectsWithParseClass:self.parseClassName urlParameter:nil objectId:objectId completionHandler:^(NSDictionary *result, NSError *error) {
+    __block IQURLConnection *connection = [[IQPFWebService service] objectsWithParseClass:self.parseClassName urlParameter:nil objectId:objectId completionHandler:^(NSDictionary *result, NSError *error) {
 
-        [connectionSet removeObject:connection];
+        if (connection) [connectionSet removeObject:connection];
 
         IQ_PFObject *object;
         
@@ -263,7 +276,7 @@
         }
     }];
     
-    [connectionSet addObject:connection];
+    if (connection) [connectionSet addObject:connection];
 }
 
 - (void)getObjectInBackgroundWithId:(NSString *)objectId target:(id)target selector:(SEL)selector
@@ -289,22 +302,36 @@
 {
     NSDictionary *result = [[IQPFWebService service] queryWithParseClass:self.parseClassName query:[self generateParseQuery] error:error];
     
-    return [result objectForKey:kParseResultsKey];
+    if (result)
+    {
+        return [self convertToParseObjects:[result objectForKey:kParseResultsKey]];
+    }
+    else
+    {
+        return NO;
+    }
 }
 
 - (void)findObjectsInBackgroundWithBlock:(IQ_PFArrayResultBlock)block
 {
-    IQURLConnection *connection = [[IQPFWebService service] queryWithParseClass:self.parseClassName query:[self generateParseQuery] completionHandler:^(NSDictionary *result, NSError *error) {
+    __block IQURLConnection *connection = [[IQPFWebService service] queryWithParseClass:self.parseClassName query:[self generateParseQuery] completionHandler:^(NSDictionary *result, NSError *error) {
 
-        [connectionSet removeObject:connection];
+        if (connection) [connectionSet removeObject:connection];
 
         if (block)
         {
-            block([result objectForKey:kParseResultsKey],error);
+            NSArray *parseObjects;
+            
+            if (result)
+            {
+                parseObjects = [self convertToParseObjects:[result objectForKey:kParseResultsKey]];
+            }
+
+            block(parseObjects,error);
         }
     }];
     
-    [connectionSet addObject:connection];
+    if (connection) [connectionSet addObject:connection];
 }
 
 - (void)findObjectsInBackgroundWithTarget:(id)target selector:(SEL)selector
@@ -345,9 +372,9 @@
 {
     NSDictionary *queryDict = @{kParseWhereKey: _queryDictionary,kParseSkipKey:@(self.skip),kParseLimitKey:@1};
 
-    IQURLConnection *connection = [[IQPFWebService service] queryWithParseClass:self.parseClassName query:queryDict completionHandler:^(NSDictionary *result, NSError *error) {
+    __block IQURLConnection *connection = [[IQPFWebService service] queryWithParseClass:self.parseClassName query:queryDict completionHandler:^(NSDictionary *result, NSError *error) {
         
-        [connectionSet removeObject:connection];
+        if (connection) [connectionSet removeObject:connection];
 
         IQ_PFObject *object;
         
@@ -363,7 +390,7 @@
         }
     }];
     
-    [connectionSet addObject:connection];
+    if (connection) [connectionSet addObject:connection];
 }
 
 - (void)getFirstObjectInBackgroundWithTarget:(id)target selector:(SEL)selector
@@ -396,9 +423,9 @@
 {
     NSDictionary *queryDict = @{kParseWhereKey: _queryDictionary,kParseCountKey:@(YES),kParseSkipKey:@(self.skip),kParseLimitKey:@0};
 
-    IQURLConnection *connection = [[IQPFWebService service] queryWithParseClass:self.parseClassName query:queryDict completionHandler:^(NSDictionary *result, NSError *error) {
+    __block IQURLConnection *connection = [[IQPFWebService service] queryWithParseClass:self.parseClassName query:queryDict completionHandler:^(NSDictionary *result, NSError *error) {
         
-        [connectionSet removeObject:connection];
+        if (connection) [connectionSet removeObject:connection];
 
         if (block)
         {
@@ -406,7 +433,7 @@
         }
     }];
     
-    [connectionSet addObject:connection];
+    if (connection) [connectionSet addObject:connection];
 }
 
 - (void)countObjectsInBackgroundWithTarget:(id)target selector:(SEL)selector
@@ -441,6 +468,17 @@
 
 //@property (nonatomic, assign) BOOL trace;
 
+-(NSArray*)convertToParseObjects:(NSArray*)attributedObjeccts
+{
+    NSMutableArray *parseObjects = [[NSMutableArray alloc] init];
+    
+    for (NSDictionary *dict in attributedObjeccts)
+    {
+        [parseObjects addObject:[IQ_PFObject objectWithClassName:self.parseClassName dictionary:dict]];
+    }
+
+    return parseObjects;
+}
 
 +(NSDictionary*)whereLessThan:(id)lessThanValue
 {
@@ -493,6 +531,7 @@
         return @{kParseSelectKey: @{kParseQueryKey: query}};
     }
 }
+
 
 /*
  NSString *const kParseSelectKey                 =   @"$select";

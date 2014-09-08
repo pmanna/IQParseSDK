@@ -1,6 +1,6 @@
 //
-//  IQ_PFRelation.h
-// https://github.com/hackiftekhar/IQParseSDK
+//  UIWindow+Hierarchy.m
+// https://github.com/hackiftekhar/IQKeyboardManager
 // Copyright (c) 2013-14 Iftekhar Qurashi.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -21,17 +21,36 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#import <Foundation/Foundation.h>
+#import "IQUIWindow+Hierarchy.h"
 
-@class IQ_PFQuery,IQ_PFObject;
+#import <UIKit/UINavigationController.h>
 
-@interface IQ_PFRelation : NSObject
+#import "IQKeyboardManagerConstantsInternal.h"
+IQ_LoadCategory(IQUIWindowHierarchy)
 
-@property (nonatomic, strong) NSString *targetClass;
 
-//- (IQ_PFQuery *)query;
+@implementation UIWindow (IQ_UIWindow_Hierarchy)
 
-//- (void)addObject:(IQ_PFObject *)object;
-//- (void)removeObject:(IQ_PFObject *)object;
+- (UIViewController*) topMostController
+{
+    UIViewController *topController = [self rootViewController];
+    
+    //  Getting topMost ViewController
+    while ([topController presentedViewController])	topController = [topController presentedViewController];
+	
+    //  Returning topMost ViewController
+    return topController;
+}
+
+- (UIViewController*)currentViewController;
+{
+    UIViewController *currentViewController = [self topMostController];
+    
+    while ([currentViewController isKindOfClass:[UINavigationController class]] && [(UINavigationController*)currentViewController topViewController])
+        currentViewController = [(UINavigationController*)currentViewController topViewController];
+    
+    return currentViewController;
+}
+
 
 @end

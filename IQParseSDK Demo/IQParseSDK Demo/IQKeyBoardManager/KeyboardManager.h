@@ -1,6 +1,6 @@
 //
-//  IQ_PFRelation.h
-// https://github.com/hackiftekhar/IQParseSDK
+//  KeyboardManager.h
+// https://github.com/hackiftekhar/IQKeyboardManager
 // Copyright (c) 2013-14 Iftekhar Qurashi.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -21,17 +21,20 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#import <Foundation/Foundation.h>
 
-@class IQ_PFQuery,IQ_PFObject;
+#ifndef KeyboardManager_h
+#define KeyboardManager_h
 
-@interface IQ_PFRelation : NSObject
+#import "IQBarButtonItem.h"
+#import "IQKeyboardManager.h"
+#import "IQKeyboardManagerConstants.h"
+#import "IQKeyboardReturnKeyHandler.h"
+#import "IQSegmentedNextPrevious.h"
+#import "IQTextView.h"
+#import "IQTitleBarButtonItem.h"
+#import "IQToolbar.h"
+#import "IQUIView+Hierarchy.h"
+#import "IQUIView+IQKeyboardToolbar.h"
+#import "IQUIWindow+Hierarchy.h"
 
-@property (nonatomic, strong) NSString *targetClass;
-
-//- (IQ_PFQuery *)query;
-
-//- (void)addObject:(IQ_PFObject *)object;
-//- (void)removeObject:(IQ_PFObject *)object;
-
-@end
+#endif

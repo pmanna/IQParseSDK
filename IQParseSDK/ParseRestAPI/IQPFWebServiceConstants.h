@@ -50,9 +50,6 @@ extern NSString *const kParseSkipKey;
 extern NSString *const kParseWhereKey;
 extern NSString *const kParseOrderKey;
 
-extern NSString *const kParseUrlKey;
-extern NSString *const kParseNameKey;
-
 extern NSString *const kParseLessThanKey;
 extern NSString *const kParseLessThanOrEqualKey;
 extern NSString *const kParseGreaterThanKey;
@@ -73,9 +70,21 @@ extern NSString *const kParsePasswordKey;
 extern NSString *const kParseEmailKey;
 extern NSString *const kParseSessionTokenKey;
 
+extern NSString *const kParseFileContentTypeImage;
+extern NSString *const kParseFileContentTypeText;
 
+extern NSString *const kParse__TypeKey;
+extern NSString *const kParseFileKey;
+extern NSString *const kParseDateKey;
+extern NSString *const kParseBytesKey;
+extern NSString *const kParsePointerKey;
+extern NSString *const kParseRelationKey;
 
-
+extern NSString *const kParseISOKey;
+extern NSString *const kParseUrlKey;
+extern NSString *const kParseNameKey;
+extern NSString *const kParseBase64Key;
+extern NSString *const kParseClassNameKey;
 
 
 

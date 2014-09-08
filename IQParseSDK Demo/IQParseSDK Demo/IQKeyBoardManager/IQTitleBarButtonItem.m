@@ -1,6 +1,6 @@
 //
-//  IQ_PFRelation.h
-// https://github.com/hackiftekhar/IQParseSDK
+//  IQTitleBarButtonItem.m
+// https://github.com/hackiftekhar/IQKeyboardManager
 // Copyright (c) 2013-14 Iftekhar Qurashi.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -21,17 +21,41 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#import <Foundation/Foundation.h>
+#import <UIKit/UILabel.h>
 
-@class IQ_PFQuery,IQ_PFObject;
+#import "IQTitleBarButtonItem.h"
+#import "IQKeyboardManagerConstants.h"
 
-@interface IQ_PFRelation : NSObject
 
-@property (nonatomic, strong) NSString *targetClass;
+@implementation IQTitleBarButtonItem
+{
+    UILabel *_titleLabel;
+}
+@synthesize font = _font;
 
-//- (IQ_PFQuery *)query;
+-(id)initWithFrame:(CGRect)frame Title:(NSString *)title
+{
+    self = [super initWithTitle:nil style:UIBarButtonItemStylePlain target:nil action:nil];
+    if (self)
+    {
+        _titleLabel = [[UILabel alloc] initWithFrame:frame];
+        [_titleLabel setBackgroundColor:[UIColor clearColor]];
+        [_titleLabel setTextAlignment:NSTextAlignmentCenter];
+        [_titleLabel setText:title];
+        [_titleLabel setAutoresizingMask:UIViewAutoresizingFlexibleWidth];
+        
+        [self setFont:[UIFont boldSystemFontOfSize:12.0]];
 
-//- (void)addObject:(IQ_PFObject *)object;
-//- (void)removeObject:(IQ_PFObject *)object;
+        self.customView = _titleLabel;
+        self.enabled = NO;
+    }
+    return self;
+}
+
+-(void)setFont:(UIFont *)font
+{
+    _font = font;
+    [_titleLabel setFont:font];
+}
 
 @end

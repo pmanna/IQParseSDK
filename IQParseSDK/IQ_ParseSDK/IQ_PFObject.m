@@ -23,12 +23,24 @@
 
 #import "IQ_PFObject.h"
 #import "IQPFWebService.h"
+#import "IQ_PFFile.h"
+#import "IQ_PFRelation.h"
+
+#import "IQ_Base64.h"
 
 #import <Foundation/NSDate.h>
 #import <Foundation/NSThread.h>
 #import <Foundation/NSDictionary.h>
 #import <Foundation/NSDateFormatter.h>
 #import <Foundation/NSTimeZone.h>
+
+@interface IQ_PFFile ()
+
+-(NSDictionary*)coreSerializedAttribute;
+-(void)serializeAttributes:(NSDictionary*)result;
+
+@end
+
 
 @interface IQ_PFObject()
 
@@ -37,8 +49,9 @@
 @implementation IQ_PFObject
 {
     NSMutableDictionary *displayAttributes;
-    
     NSMutableDictionary *needUpdateAttributes;
+    
+    NSMutableSet *connectionSet;
 }
 
 - (id)init
@@ -46,23 +59,112 @@
     self = [super init];
     if (self)
     {
+        connectionSet = [[NSMutableSet alloc] init];
+
         displayAttributes       = [[NSMutableDictionary alloc] init];
         needUpdateAttributes    = [[NSMutableDictionary alloc] init];
     }
     return self;
 }
 
--(void)handleResult:(NSDictionary*)result
+-(NSDictionary*)coreSerializedAttribute
 {
-    if ([result objectForKey:kParseCreatedAtKey])
-        _createdAt  =   [[[self class] parseSDKDateFormatter] dateFromString:[result objectForKey:kParseCreatedAtKey]];
-    
-    if ([result objectForKey:kParseUpdatedAtKey])
-        _updatedAt  =   [[[self class] parseSDKDateFormatter] dateFromString:[result objectForKey:kParseUpdatedAtKey]];
-    
-    _objectId   =   [result objectForKey:kParseObjectIdKey];
+    return @{ kParse__TypeKey: kParsePointerKey, kParseClassNameKey: self.parseClassName, kParseObjectIdKey: self.objectId};
+}
 
-    [displayAttributes addEntriesFromDictionary:result];
+-(NSDictionary*)deserializedAttributes
+{
+    NSMutableDictionary *deserializedAttributes = [[NSMutableDictionary alloc] init];
+    
+    for (NSString *key in [needUpdateAttributes allKeys])
+    {
+        id object = [needUpdateAttributes objectForKey:key];
+        
+        //Handle IQ_PFFile
+        if ([object isKindOfClass:[IQ_PFFile class]])
+        {
+            object = [object coreSerializedAttribute];
+        }
+        //Handle NSDate
+        else if ([object isKindOfClass:[NSDate class]])
+        {
+            object = [[self class] dateAttributeWithDate:object];
+        }
+        //Handle NSData
+        else if ([object isKindOfClass:[NSData class]])
+        {
+            object = [object base64EncodedString];
+        }
+        //Handle IQ_PFObject Pointers
+        else if ([object isKindOfClass:[IQ_PFObject class]])
+        {
+            object = [object coreSerializedAttribute];
+        }
+        //Handle IQ_PFRelation Pointers
+        else if ([object isKindOfClass:[IQ_PFRelation class]])
+        {
+            object = [object coreSerializedAttribute];
+        }
+    
+        if (object)     [deserializedAttributes setObject:object forKey:key];
+    }
+    
+    return deserializedAttributes;
+}
+
+-(void)serializeAttributes:(NSDictionary*)result
+{
+    if (result)
+    {
+        if ([result objectForKey:kParseCreatedAtKey])
+            _createdAt  =   [[[self class] parseSDKDateFormatter] dateFromString:[result objectForKey:kParseCreatedAtKey]];
+        
+        if ([result objectForKey:kParseUpdatedAtKey])
+            _updatedAt  =   [[[self class] parseSDKDateFormatter] dateFromString:[result objectForKey:kParseUpdatedAtKey]];
+        
+        if ([result objectForKey:kParseObjectIdKey])
+            _objectId   =   [result objectForKey:kParseObjectIdKey];
+        
+        
+        for (NSString *key in [result allKeys])
+        {
+            id object = [result objectForKey:key];
+
+            if ([object isKindOfClass:[NSDictionary class]])
+            {
+                //Handle IQ_PFFile
+                if ([[object objectForKey:kParse__TypeKey] isEqualToString:kParseFileKey])
+                {
+                    object = [[IQ_PFFile alloc] init];
+                    [object serializeAttributes:[result objectForKey:key]];
+                }
+                //Handle NSDate
+                else if ([[object objectForKey:kParse__TypeKey] isEqualToString:kParseDateKey])
+                {
+                    object = [[self class] parseSDKDateFromString:[object objectForKey:kParseISOKey]];
+                }
+                //Handle NSData
+                else if ([[object objectForKey:kParse__TypeKey] isEqualToString:kParseBytesKey])
+                {
+                    object = [[object objectForKey:kParseBase64Key] base64DecodedData];
+                }
+                //Handle IQ_PFObject Pointers
+                else if ([[object objectForKey:kParse__TypeKey] isEqualToString:kParsePointerKey])
+                {
+                    object = [IQ_PFObject objectWithoutDataWithClassName:[object objectForKey:kParseClassNameKey] objectId:[object objectForKey:kParseObjectIdKey]];
+                }
+                //Handle IQ_PFRelation Pointers
+                else if ([[object objectForKey:kParse__TypeKey] isEqualToString:kParseRelationKey])
+                {
+                    IQ_PFRelation *relation = [[IQ_PFRelation alloc] init];
+                    relation.targetClass = [object objectForKey:kParseClassNameKey];
+                    object = relation;
+                }
+            }
+
+            if (object)     [displayAttributes setObject:object forKey:key];
+        }
+    }
 }
 
 + (IQ_PFObject *)objectWithClassName:(NSString *)className
@@ -100,7 +202,7 @@
     
     if (self)
     {
-        [displayAttributes      addEntriesFromDictionary:dictionary];
+        [self serializeAttributes:dictionary];
         [needUpdateAttributes   addEntriesFromDictionary:dictionary];
     }
     
@@ -350,17 +452,17 @@
     
     if (self.objectId)
     {
-        result = [[IQPFWebService service] updateObjectWithParseClass:self.parseClassName objectId:self.objectId attributes:needUpdateAttributes error:error];
+        result = [[IQPFWebService service] updateObjectWithParseClass:self.parseClassName objectId:self.objectId attributes:[self deserializedAttributes] error:error];
     }
     else
     {
-        result = [[IQPFWebService service] createObjectWithParseClass:self.parseClassName attributes:needUpdateAttributes error:error];
+        result = [[IQPFWebService service] createObjectWithParseClass:self.parseClassName attributes:[self deserializedAttributes] error:error];
     }
     
     
     if (result)
     {
-        [self handleResult:result];
+        [self serializeAttributes:result];
         return YES;
     }
     else
@@ -378,11 +480,13 @@
 {
     if (self.objectId)
     {
-        [[IQPFWebService service] updateObjectWithParseClass:self.parseClassName objectId:self.objectId attributes:needUpdateAttributes completionHandler:^(NSDictionary *result, NSError *error) {
+        __block IQURLConnection *connection = [[IQPFWebService service] updateObjectWithParseClass:self.parseClassName objectId:self.objectId attributes:[self deserializedAttributes] completionHandler:^(NSDictionary *result, NSError *error) {
             
+            if (connection) [connectionSet removeObject:connection];
+
             if (result)
             {
-                [self handleResult:result];
+                [self serializeAttributes:result];
             }
 
             if (block)
@@ -390,13 +494,18 @@
                 block((result!= nil),error);
             }
         }];
+        
+        if (connection) [connectionSet addObject:connection];
     }
     else
     {
-        [[IQPFWebService service] createObjectWithParseClass:self.parseClassName attributes:needUpdateAttributes completionHandler:^(NSDictionary *result, NSError *error) {
+        __block IQURLConnection *connection = [[IQPFWebService service] createObjectWithParseClass:self.parseClassName attributes:[self deserializedAttributes] completionHandler:^(NSDictionary *result, NSError *error) {
+
+            if (connection) [connectionSet removeObject:connection];
+
             if (result)
             {
-                [self handleResult:result];
+                [self serializeAttributes:result];
             }
             
             if (block)
@@ -404,6 +513,8 @@
                 block((result!= nil),error);
             }
         }];
+        
+        if (connection) [connectionSet addObject:connection];
     }
 }
 
@@ -447,17 +558,19 @@
 
     if (result)
     {
-        [self handleResult:result];
+        [self serializeAttributes:result];
     }
 }
 
 - (void)refreshInBackgroundWithBlock:(IQ_PFObjectResultBlock)block
 {
-    [[IQPFWebService service] objectsWithParseClass:self.parseClassName urlParameter:nil objectId:self.objectId completionHandler:^(NSDictionary *result, NSError *error) {
+    __block IQURLConnection *connection = [[IQPFWebService service] objectsWithParseClass:self.parseClassName urlParameter:nil objectId:self.objectId completionHandler:^(NSDictionary *result, NSError *error) {
+
+        if (connection) [connectionSet removeObject:connection];
 
         if (result)
         {
-            [self handleResult:result];
+            [self serializeAttributes:result];
         }
 
         if (block)
@@ -465,6 +578,7 @@
             block((result!= nil)?self:nil,error);
         }
         
+        if (connection) [connectionSet addObject:connection];
     }];
 }
 
@@ -527,7 +641,9 @@
 
 - (void)deleteInBackgroundWithBlock:(IQ_PFBooleanResultBlock)block
 {
-    [[IQPFWebService service] deleteObjectWithParseClass:self.parseClassName objectId:self.objectId completionHandler:^(NSDictionary *result, NSError *error) {
+    __block IQURLConnection *connection = [[IQPFWebService service] deleteObjectWithParseClass:self.parseClassName objectId:self.objectId completionHandler:^(NSDictionary *result, NSError *error) {
+
+        if (connection) [connectionSet removeObject:connection];
 
         if (result)
         {
@@ -542,6 +658,8 @@
             block((result!= nil),error);
         }
     }];
+    
+    if (connection) [connectionSet addObject:connection];
 }
 
 - (void)deleteInBackgroundWithTarget:(id)target selector:(SEL)selector
@@ -568,6 +686,7 @@
 {
 	NSMutableDictionary *dictionary = [[NSThread currentThread] threadDictionary];
 	NSDateFormatter *formatter = dictionary[@"iso"];
+    
 	if (!formatter)
     {
 		formatter = [[NSDateFormatter alloc] init];
@@ -576,6 +695,25 @@
 		dictionary[@"iso"] = formatter;
 	}
 	return formatter;
+}
+
++(NSString*)parseSDKStringFromDate:(NSDate*)date
+{
+    NSDateFormatter *dateFormatter = [self parseSDKDateFormatter];
+    
+    return [dateFormatter stringFromDate:date];
+}
+
++(NSDate*)parseSDKDateFromString:(NSString*)dateString
+{
+    NSDateFormatter *dateFormatter = [self parseSDKDateFormatter];
+    
+    return [dateFormatter dateFromString:dateString];
+}
+
++(NSDictionary*)dateAttributeWithDate:(NSDate*)date
+{
+    return @{kParse__TypeKey: kParseDateKey,kParseISOKey:[self parseSDKStringFromDate:date]};
 }
 
 //Increment/Decrement Number Attribute

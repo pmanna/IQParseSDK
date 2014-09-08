@@ -51,9 +51,6 @@ NSString *const kParseSkipKey                   =   @"skip";
 NSString *const kParseWhereKey                  =   @"where";
 NSString *const kParseOrderKey                  =   @"order";
 
-NSString *const kParseUrlKey                    =   @"url";
-NSString *const kParseNameKey                   =   @"name";
-
 NSString *const kParseLessThanKey               =   @"$lt";
 NSString *const kParseLessThanOrEqualKey        =   @"$lte";
 NSString *const kParseGreaterThanKey            =   @"$gt";
@@ -75,11 +72,22 @@ NSString *const kParseEmailKey                  =   @"email";
 NSString *const kParseSessionTokenKey           =   @"sessionToken";
 
 
+NSString *const kParseFileContentTypeImage  =   @"image/jpeg";
+NSString *const kParseFileContentTypeText   =   @"text/plain";
 
 
+NSString *const kParse__TypeKey                 =   @"__type";
+NSString *const kParseFileKey                   =   @"File";
+NSString *const kParseDateKey                   =   @"Date";
+NSString *const kParseBytesKey                  =   @"Bytes";
+NSString *const kParsePointerKey                =   @"Pointer";
+NSString *const kParseRelationKey               =   @"Relation";
 
-
-
+NSString *const kParseUrlKey                    =   @"url";
+NSString *const kParseNameKey                   =   @"name";
+NSString *const kParseISOKey                    =   @"iso";
+NSString *const kParseBase64Key                 =   @"base64";
+NSString *const kParseClassNameKey              =   @"className";
 
 
 

@@ -1,6 +1,6 @@
 //
-//  IQ_PFRelation.h
-// https://github.com/hackiftekhar/IQParseSDK
+//  UIWindow+Hierarchy.h
+// https://github.com/hackiftekhar/IQKeyboardManager
 // Copyright (c) 2013-14 Iftekhar Qurashi.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -21,17 +21,25 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#import <Foundation/Foundation.h>
+#import <UIKit/UIWindow.h>
 
-@class IQ_PFQuery,IQ_PFObject;
+@class UIViewController;
 
-@interface IQ_PFRelation : NSObject
+@interface UIWindow (IQ_UIWindow_Hierarchy)
 
-@property (nonatomic, strong) NSString *targetClass;
+/*!
+    @method topMostController
+ 
+    @return Returns the current Top Most ViewController in hierarchy.
+ */
+- (UIViewController*) topMostController;
 
-//- (IQ_PFQuery *)query;
+/*!
+    @method currentViewController
+ 
+    @return Returns the topViewController in stack of topMostController.
+ */
+- (UIViewController*)currentViewController;
 
-//- (void)addObject:(IQ_PFObject *)object;
-//- (void)removeObject:(IQ_PFObject *)object;
 
 @end

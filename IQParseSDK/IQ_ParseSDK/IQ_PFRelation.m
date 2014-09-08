@@ -22,7 +22,14 @@
 // THE SOFTWARE.
 
 #import "IQ_PFRelation.h"
+#import "IQPFWebServiceConstants.h"
 
 @implementation IQ_PFRelation
+
+-(NSDictionary*)coreSerializedAttribute
+{
+    return @{ kParse__TypeKey: kParseRelationKey, kParseClassNameKey: self.targetClass};
+}
+
 
 @end

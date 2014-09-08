@@ -112,7 +112,7 @@
         
         url = [NSURL URLWithString:[[NSString stringWithFormat:@"%@%@%@",self.serverURL,path,parameterString] stringByAddingPercentEscapesUsingEncoding:NSASCIIStringEncoding]];
     }
-    else if ([method isEqualToString:kIQHTTPMethodPOST])
+    else if ([method isEqualToString:kIQHTTPMethodPOST] || [method isEqualToString:kIQHTTPMethodPUT] || [method isEqualToString:kIQHTTPMethodDELETE])
     {
         url = [NSURL URLWithString:[[NSString stringWithFormat:@"%@%@",self.serverURL,path] stringByAddingPercentEscapesUsingEncoding:NSASCIIStringEncoding]];
         
@@ -171,18 +171,44 @@
     
     if (_logEnabled)
 	{
-		NSLog(@"RequestURL:- %@",request.URL);
+        if (request.URL == NULL)
+            NSLog(@"RequestURL is NULL");
+        else
+            NSLog(@"RequestURL:- %@",request.URL);
+
 		NSLog(@"HTTP Method:- %@",request.HTTPMethod);
-		NSLog(@"HTTPHeaderFields:- %@",request.allHTTPHeaderFields);
-		NSLog(@"Body:- %@\n\n",[[NSString alloc] initWithData:request.HTTPBody encoding:NSUTF8StringEncoding]);
+        
+        if (request.allHTTPHeaderFields)
+        {
+            NSLog(@"HTTPHeaderFields:- %@",request.allHTTPHeaderFields);
+        }
+        
+        if (request.HTTPBody)
+        {
+            NSString *requestString = [[NSString alloc] initWithData:request.HTTPBody encoding:NSUTF8StringEncoding];
+            
+            if (requestString)
+            {
+                NSLog(@"Request Body:- %@\n\n",requestString);
+            }
+            else
+            {
+                NSLog(@"Request Body Length:- %d\n\n",[request.HTTPBody length]);
+            }
+        }
 	}
     
     IQURLConnection *connection = [IQURLConnection sendAsynchronousRequest:request responseBlock:NULL uploadProgressBlock:NULL downloadProgressBlock:NULL completionHandler:^(NSData *result, NSError *error) {
+        
         if (_logEnabled)
         {
             NSLog(@"URL:- %@",request.URL);
             NSLog(@"HTTP Method:- %@",request.HTTPMethod);
-            NSLog(@"Response HeaderFields:- %@", connection.response.allHeaderFields);
+            
+            if (connection.response.allHeaderFields)
+            {
+                NSLog(@"Response HeaderFields:- %@", connection.response.allHeaderFields);
+            }
             
             if (error)
             {
@@ -191,7 +217,16 @@
             
             if (result)
             {
-                NSLog(@"Response:- %@\n\n",[[NSString alloc] initWithData:result encoding:NSUTF8StringEncoding]);
+                NSString *responseString = [[NSString alloc] initWithData:result encoding:NSUTF8StringEncoding];
+                
+                if ([responseString length])
+                {
+                    NSLog(@"Response:- %@\n\n",responseString);
+                }
+                else
+                {
+                    NSLog(@"Response Data Length:- %d\n\n",[result length]);
+                }
             }
         }
         
@@ -288,7 +323,11 @@
     
     if (_logEnabled)
 	{
-		NSLog(@"RequestURL:- %@",request.URL);
+        if (request.URL == NULL)
+            NSLog(@"RequestURL is NULL");
+        else
+            NSLog(@"RequestURL:- %@",request.URL);
+
 		NSLog(@"HTTP Method:- %@",request.HTTPMethod);
 		NSLog(@"HTTPHeaderFields:- %@",request.allHTTPHeaderFields);
 		NSLog(@"Body:- %@\n\n",[[NSString alloc] initWithData:request.HTTPBody encoding:NSUTF8StringEncoding]);

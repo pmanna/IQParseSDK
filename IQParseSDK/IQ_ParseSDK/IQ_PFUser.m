@@ -26,7 +26,7 @@
 
 @interface IQ_PFObject (Subclassing)
 
--(void)handleResult:(NSDictionary*)result;
+-(void)serializeAttributes:(NSDictionary*)result;
 
 @end
 
@@ -60,9 +60,9 @@ IQ_PFUser *_currentUser;
     _currentUser = currentUser;
 }
 
--(void)handleResult:(NSDictionary *)result
+-(void)serializeAttributes:(NSDictionary *)result
 {
-    [super handleResult:result];
+    [super serializeAttributes:result];
     
     if ([result objectForKey:kParseSessionTokenKey])
         self.sessionToken   =   [result objectForKey:kParseSessionTokenKey];
@@ -90,7 +90,7 @@ IQ_PFUser *_currentUser;
     
     if ([result objectForKey:kParseSessionTokenKey])
     {
-        [self handleResult:result];
+        [self serializeAttributes:result];
 
         return YES;
     }
@@ -143,7 +143,7 @@ extern NSString *const kParsePasswordKey;
     if ([result objectForKey:kParseSessionTokenKey])
     {
         IQ_PFUser *user = [[IQ_PFUser alloc] init];
-        [user handleResult:result];
+        [user serializeAttributes:result];
         
         [self setCurrentUser:user];
         
@@ -183,7 +183,7 @@ extern NSString *const kParsePasswordKey;
         if ([result objectForKey:kParseSessionTokenKey])
         {
             IQ_PFUser *user = [[IQ_PFUser alloc] init];
-            [user handleResult:result];
+            [user serializeAttributes:result];
 
             [self setCurrentUser:user];
         }

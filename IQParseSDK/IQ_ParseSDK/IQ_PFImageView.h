@@ -11,8 +11,9 @@
 
 @interface IQ_PFImageView : UIImageView
 
-//@property (nonatomic, strong) IQ_PFFile *file;
-//- (void)loadInBackground;
-//- (void)loadInBackground:(void (^)(UIImage *image, NSError *error))completion;
+@property (nonatomic, strong) IQ_PFFile *file;
+
+- (void)loadInBackground;
+- (void)loadInBackground:(void (^)(UIImage *image, NSError *error))completion;
 
 @end

@@ -49,16 +49,21 @@
         
         if ([name length] == 0)
         {
-            if ([contentType isEqualToString:@"image/jpeg"])        name = @"image.jpg";
-            else if ([contentType isEqualToString:@"text/plain"])   name = @"text.txt";
-            else                                                    name = @"file";
+            if ([contentType isEqualToString:kParseFileContentTypeImage])       _name = @"image.jpg";
+            else if ([contentType isEqualToString:kParseFileContentTypeText])   _name = @"text.txt";
+            else                                                                _name = @"file";
         }
     }
     
     return self;
 }
 
--(void)handleResult:(NSDictionary*)result
+-(NSDictionary*)coreSerializedAttribute
+{
+    return @{ kParse__TypeKey: kParseFileKey, kParseNameKey: _name};
+}
+
+-(void)serializeAttributes:(NSDictionary*)result
 {
     _url = [result objectForKey:kParseUrlKey];
     _name = [result objectForKey:kParseNameKey];
@@ -89,7 +94,7 @@
     
     if (result)
     {
-        [self handleResult:result];
+        [self serializeAttributes:result];
         return YES;
     }
     else
@@ -110,7 +115,7 @@
 
 - (void)saveInBackgroundWithBlock:(IQ_PFBooleanResultBlock)block progressBlock:(IQ_PFProgressBlock)progressBlock
 {
-    IQURLConnection *connection = [[IQPFWebService service] saveFileData:_data fileName:self.name contentType:_contentType uploadProgressBlock:^(CGFloat progress) {
+    __block IQURLConnection *connection = [[IQPFWebService service] saveFileData:_data fileName:self.name contentType:_contentType uploadProgressBlock:^(CGFloat progress) {
         
         if (progressBlock)
         {
@@ -118,18 +123,18 @@
         }
         
     } completionHandler:^(NSDictionary *result, NSError *error) {
-        
-        [connectionSet removeObject:connection];
+
+        if (connection) [connectionSet removeObject:connection];
         
         if (result)
         {
-            [self handleResult:result];
+            [self serializeAttributes:result];
         }
         
         block(result!=nil, error);
     }];
     
-    [connectionSet addObject:connection];
+    if (connection) [connectionSet addObject:connection];
 }
 
 - (void)saveInBackgroundWithTarget:(id)target selector:(SEL)selector
@@ -177,26 +182,33 @@
 
 - (void)getDataInBackgroundWithBlock:(IQ_PFDataResultBlock)resultBlock progressBlock:(IQ_PFProgressBlock)progressBlock
 {
-    IQURLConnection *connection = [[IQPFWebService service] getDataWithFileUrl:[NSURL URLWithString:_url] downloadProgressBlock:^(CGFloat progress) {
-
-        if (progressBlock)
-        {
-            progressBlock(progress*100);
-        }
-
-    } completionHandler:^(NSData *result, NSError *error) {
-
-        [connectionSet removeObject:connection];
-
-        if (result)
-        {
-            _data = result;
-        }
+    if (_data)
+    {
+        resultBlock(_data,nil);
+    }
+    else
+    {
+        __block IQURLConnection *connection = [[IQPFWebService service] getDataWithFileUrl:[NSURL URLWithString:_url] downloadProgressBlock:^(CGFloat progress) {
+            
+            if (progressBlock)
+            {
+                progressBlock(progress*100);
+            }
+            
+        } completionHandler:^(NSData *result, NSError *error) {
+            
+            if (connection) [connectionSet removeObject:connection];
+            
+            if (result)
+            {
+                _data = result;
+            }
+            
+            resultBlock(result, error);
+        }];
         
-        resultBlock(result, error);
-    }];
-    
-    [connectionSet addObject:connection];
+        if (connection) [connectionSet addObject:connection];
+    }
 }
 
 //- (void)getDataStreamInBackgroundWithBlock:(IQ_PFDataStreamResultBlock)resultBlock progressBlock:(IQ_PFProgressBlock)progressBlock;

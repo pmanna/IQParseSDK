@@ -1,6 +1,6 @@
 //
-//  IQ_PFRelation.h
-// https://github.com/hackiftekhar/IQParseSDK
+//  IQBarButtonItem.h
+// https://github.com/hackiftekhar/IQKeyboardManager
 // Copyright (c) 2013-14 Iftekhar Qurashi.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -21,17 +21,9 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#import <Foundation/Foundation.h>
 
-@class IQ_PFQuery,IQ_PFObject;
+#import <UIKit/UIKit.h>
 
-@interface IQ_PFRelation : NSObject
-
-@property (nonatomic, strong) NSString *targetClass;
-
-//- (IQ_PFQuery *)query;
-
-//- (void)addObject:(IQ_PFObject *)object;
-//- (void)removeObject:(IQ_PFObject *)object;
+@interface IQBarButtonItem : UIBarButtonItem
 
 @end

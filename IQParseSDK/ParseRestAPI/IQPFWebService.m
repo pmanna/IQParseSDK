@@ -37,9 +37,6 @@
         [self setServerURL:@"https://api.parse.com/1/"];
 
         [self setDefaultContentType:kIQContentTypeApplicationJson];
-
-        [self setDefaultHeaderValue:[IQ_Parse getApplicationId] forHeaderField:kParse_X_Parse_Application_Id];
-        [self setDefaultHeaderValue:[IQ_Parse getRestAPIKey] forHeaderField:kParse_X_Parse_REST_API_Key];
     }
     return self;
 }
