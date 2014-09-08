@@ -30,6 +30,8 @@
     
     self.refreshControl = [[UIRefreshControl alloc] init];
     [self.refreshControl addTarget:self action:@selector(getObjects) forControlEvents:UIControlEventValueChanged];
+
+    self.tableView.allowsMultipleSelectionDuringEditing = NO;
 }
 
 -(void)viewWillAppear:(BOOL)animated
@@ -61,12 +63,6 @@
 
         [self.tableView reloadSections:[NSIndexSet indexSetWithIndex:0] withRowAnimation:UITableViewRowAnimationAutomatic];
     }];
-}
-
-- (void)didReceiveMemoryWarning
-{
-    [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
 }
 
 -(void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
@@ -107,5 +103,43 @@
     
     return cell;
 }
+
+#pragma mark - Table view delegate
+
+- (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    return YES;
+}
+
+- (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    if (editingStyle == UITableViewCellEditingStyleDelete)
+    {
+        IQ_PFObject *object = [todoItems objectAtIndex:indexPath.row];
+        
+        UIActivityIndicatorView *activityIndicatorView = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
+        [activityIndicatorView startAnimating];
+        UIBarButtonItem *leftItem = [[UIBarButtonItem alloc] initWithCustomView:activityIndicatorView];
+        UIBarButtonItem *oldLeftItem = self.navigationItem.leftBarButtonItem;
+        self.navigationItem.leftBarButtonItem = leftItem;
+        
+        [self.view setUserInteractionEnabled:NO];
+        [object deleteInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
+            
+            self.navigationItem.leftBarButtonItem = oldLeftItem;
+            [self.view setUserInteractionEnabled:YES];
+            
+            if (succeeded)
+            {
+                NSMutableArray *_mutableTodDoItems = [[NSMutableArray alloc] initWithArray:todoItems];
+                [_mutableTodDoItems removeObject:object];
+                todoItems = _mutableTodDoItems;
+                
+                [tableView deleteRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationAutomatic];
+            }
+        }];
+    }
+}
+
 
 @end

@@ -79,7 +79,6 @@
                         </connections>
                     </tableView>
                     <navigationItem key="navigationItem" title="IQParseSDK" id="PcO-Qf-Hpz">
-                        <barButtonItem key="leftBarButtonItem" systemItem="edit" id="ebw-rc-3x1"/>
                         <barButtonItem key="rightBarButtonItem" systemItem="add" id="BQp-Oh-taY">
                             <connections>
                                 <segue destination="wGe-cY-g3s" kind="push" identifier="IQAddEditTodoListViewController" id="bw9-rT-S28"/>

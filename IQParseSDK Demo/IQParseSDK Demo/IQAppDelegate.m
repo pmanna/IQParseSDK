@@ -19,6 +19,7 @@
     [IQ_Parse setApplicationId:@"<PARSE_APPLICATION_ID>"
                     restAPIKey:@"<PARSE_REST_API_KEY>"];
     
+
     if ([[IQ_Parse getApplicationId] isEqualToString:@"<PARSE_APPLICATION_ID>"])
     {
         NSLog(@"You must set 'PARSE_APPLICATION_ID' and 'PARSE_REST_API_KEY' in IQAppDelegate.m");
