@@ -24,6 +24,9 @@
 #import <Foundation/NSObject.h>
 #import "IQ_PFConstants.h"
 
+extern NSString *const kParseFileContentTypeImage;
+extern NSString *const kParseFileContentTypeText;
+
 @class NSData;
 
 @interface IQ_PFFile : NSObject

@@ -23,6 +23,18 @@
 
 #import <Foundation/Foundation.h>
 
+#import "IQ_PFACL.h"
+#import "IQ_PFCloud.h"
+#import "IQ_PFConstants.h"
+#import "IQ_PFFile.h"
+#import "IQ_PFGeoPoint.h"
+#import "IQ_PFImageView.h"
+#import "IQ_PFObject.h"
+#import "IQ_PFQuery.h"
+#import "IQ_PFRelation.h"
+#import "IQ_PFRole.h"
+#import "IQ_PFUser.h"
+
 @interface IQ_Parse : NSObject
 
 + (void)setApplicationId:(NSString *)applicationId restAPIKey:(NSString *)restAPIKey;

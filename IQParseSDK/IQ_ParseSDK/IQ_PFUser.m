@@ -122,6 +122,8 @@ extern NSString *const kParsePasswordKey;
     [self signUpInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
 
         NSInvocation *invocation = [NSInvocation invocationWithMethodSignature:[target methodSignatureForSelector:selector]];
+        invocation.target = target;
+        invocation.selector = selector;
         [invocation setArgument:&(succeeded) atIndex:2];
         [invocation setArgument:&error atIndex:3];
         [invocation invoke];
@@ -165,6 +167,8 @@ extern NSString *const kParsePasswordKey;
     [self logInWithUsernameInBackground:username password:password block:^(IQ_PFUser *user, NSError *error) {
 
         NSInvocation *invocation = [NSInvocation invocationWithMethodSignature:[target methodSignatureForSelector:selector]];
+        invocation.target = target;
+        invocation.selector = selector;
         [invocation setArgument:&user atIndex:2];
         [invocation setArgument:&error atIndex:3];
         [invocation invoke];
@@ -235,6 +239,8 @@ extern NSString *const kParsePasswordKey;
     [self requestPasswordResetForEmailInBackground:email block:^(BOOL succeeded, NSError *error) {
 
         NSInvocation *invocation = [NSInvocation invocationWithMethodSignature:[target methodSignatureForSelector:selector]];
+        invocation.target = target;
+        invocation.selector = selector;
         [invocation setArgument:&(succeeded) atIndex:2];
         [invocation setArgument:&error atIndex:3];
         [invocation invoke];

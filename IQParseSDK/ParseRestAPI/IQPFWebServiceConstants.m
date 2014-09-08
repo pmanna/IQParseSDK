@@ -71,11 +71,6 @@ NSString *const kParsePasswordKey               =   @"password";
 NSString *const kParseEmailKey                  =   @"email";
 NSString *const kParseSessionTokenKey           =   @"sessionToken";
 
-
-NSString *const kParseFileContentTypeImage  =   @"image/jpeg";
-NSString *const kParseFileContentTypeText   =   @"text/plain";
-
-
 NSString *const kParse__TypeKey                 =   @"__type";
 NSString *const kParseFileKey                   =   @"File";
 NSString *const kParseDateKey                   =   @"Date";

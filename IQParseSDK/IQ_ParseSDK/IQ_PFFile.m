@@ -27,6 +27,9 @@
 #import <Foundation/NSData.h>
 #import <Foundation/NSDictionary.h>
 
+NSString *const kParseFileContentTypeImage  =   @"image/jpeg";
+NSString *const kParseFileContentTypeText   =   @"text/plain";
+
 
 @implementation IQ_PFFile
 {
@@ -142,6 +145,8 @@
     [self saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
 
         NSInvocation *invocation = [NSInvocation invocationWithMethodSignature:[target methodSignatureForSelector:selector]];
+        invocation.target = target;
+        invocation.selector = selector;
         [invocation setArgument:&(succeeded) atIndex:2];
         [invocation setArgument:&error atIndex:3];
         [invocation invoke];
@@ -218,6 +223,8 @@
     [self getDataInBackgroundWithBlock:^(NSData *data, NSError *error) {
 
         NSInvocation *invocation = [NSInvocation invocationWithMethodSignature:[target methodSignatureForSelector:selector]];
+        invocation.target = target;
+        invocation.selector = selector;
         [invocation setArgument:&data atIndex:2];
         [invocation setArgument:&error atIndex:3];
         [invocation invoke];

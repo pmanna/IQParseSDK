@@ -284,6 +284,8 @@
     [self getObjectInBackgroundWithId:objectId block:^(IQ_PFObject *object, NSError *error) {
         
         NSInvocation *invocation = [NSInvocation invocationWithMethodSignature:[target methodSignatureForSelector:selector]];
+        invocation.target = target;
+        invocation.selector = selector;
         [invocation setArgument:&object atIndex:2];
         [invocation setArgument:&error atIndex:3];
         [invocation invoke];
@@ -339,6 +341,8 @@
     [self findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
 
         NSInvocation *invocation = [NSInvocation invocationWithMethodSignature:[target methodSignatureForSelector:selector]];
+        invocation.target = target;
+        invocation.selector = selector;
         [invocation setArgument:&objects atIndex:2];
         [invocation setArgument:&error atIndex:3];
         [invocation invoke];
@@ -398,6 +402,8 @@
     [self getFirstObjectInBackgroundWithBlock:^(IQ_PFObject *object, NSError *error) {
         
         NSInvocation *invocation = [NSInvocation invocationWithMethodSignature:[target methodSignatureForSelector:selector]];
+        invocation.target = target;
+        invocation.selector = selector;
         [invocation setArgument:&object atIndex:2];
         [invocation setArgument:&error atIndex:3];
         [invocation invoke];
@@ -443,6 +449,8 @@
         NSNumber *countNumber = [NSNumber numberWithInt:number];
         
         NSInvocation *invocation = [NSInvocation invocationWithMethodSignature:[target methodSignatureForSelector:selector]];
+        invocation.target = target;
+        invocation.selector = selector;
         [invocation setArgument:&(countNumber) atIndex:2];
         [invocation setArgument:&error atIndex:3];
         [invocation invoke];

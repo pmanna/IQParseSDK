@@ -523,6 +523,8 @@
     [self saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
         
         NSInvocation *invocation = [NSInvocation invocationWithMethodSignature:[target methodSignatureForSelector:selector]];
+        invocation.target = target;
+        invocation.selector = selector;
         [invocation setArgument:&(succeeded) atIndex:2];
         [invocation setArgument:&error atIndex:3];
         [invocation invoke];
@@ -587,6 +589,8 @@
     [self refreshInBackgroundWithBlock:^(IQ_PFObject *object, NSError *error) {
 
         NSInvocation *invocation = [NSInvocation invocationWithMethodSignature:[target methodSignatureForSelector:selector]];
+        invocation.target = target;
+        invocation.selector = selector;
         [invocation setArgument:&object atIndex:2];
         [invocation setArgument:&error atIndex:3];
         [invocation invoke];
@@ -667,6 +671,8 @@
     [self deleteInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
         
         NSInvocation *invocation = [NSInvocation invocationWithMethodSignature:[target methodSignatureForSelector:selector]];
+        invocation.target = target;
+        invocation.selector = selector;
         [invocation setArgument:&(succeeded) atIndex:2];
         [invocation setArgument:&error atIndex:3];
         [invocation invoke];

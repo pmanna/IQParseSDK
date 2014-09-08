@@ -79,6 +79,8 @@
     [self callFunctionInBackground:function withParameters:parameters block:^(id object, NSError *error) {
 
         NSInvocation *invocation = [NSInvocation invocationWithMethodSignature:[target methodSignatureForSelector:selector]];
+        invocation.target = target;
+        invocation.selector = selector;
         [invocation setArgument:&object atIndex:2];
         [invocation setArgument:&error atIndex:3];
         [invocation invoke];

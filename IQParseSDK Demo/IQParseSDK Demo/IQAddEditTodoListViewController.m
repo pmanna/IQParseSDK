@@ -8,11 +8,7 @@
 
 #import "IQAddEditTodoListViewController.h"
 #import "IQDropDownTextField.h"
-#import "IQ_PFFile.h"
-#import "IQ_PFImageView.h"
 #import "UIImage+Resize.h"
-#import "IQPFWebServiceConstants.h"
-
 
 @interface IQAddEditTodoListViewController ()<UIImagePickerControllerDelegate,UINavigationControllerDelegate>
 {

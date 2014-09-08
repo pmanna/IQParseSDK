@@ -70,9 +70,6 @@ extern NSString *const kParsePasswordKey;
 extern NSString *const kParseEmailKey;
 extern NSString *const kParseSessionTokenKey;
 
-extern NSString *const kParseFileContentTypeImage;
-extern NSString *const kParseFileContentTypeText;
-
 extern NSString *const kParse__TypeKey;
 extern NSString *const kParseFileKey;
 extern NSString *const kParseDateKey;

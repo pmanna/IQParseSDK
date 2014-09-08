@@ -8,8 +8,6 @@
 
 #import "IQTodoListViewController.h"
 #import "IQAddEditTodoListViewController.h"
-#import "IQ_PFObject.h"
-#import "IQ_PFQuery.h"
 
 #import "IQParseToDoCell.h"
 
@@ -44,6 +42,7 @@
 -(void)getObjects
 {
     IQ_PFQuery *query = [IQ_PFQuery queryWithClassName:@"ToDoItem"];
+    
     [query findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
         [self.refreshControl endRefreshing];
         
