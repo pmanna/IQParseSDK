@@ -25,9 +25,19 @@
 #import "IQPFWebService.h"
 #import "IQ_PFObject.h"
 #import "IQURLConnection.h"
+#import "IQ_Base64.h"
 
 #import <Foundation/NSDictionary.h>
 #import <Foundation/NSString.h>
+
+@interface IQ_PFObject ()
+
+-(NSDictionary*)coreSerializedAttribute;
++(NSDictionary*)dateAttributeWithDate:(NSDate*)date;
+
+@end
+
+
 
 @implementation IQ_PFQuery
 {
@@ -53,13 +63,60 @@
     }
 }
 
+
+-(NSDictionary*)deserializedQuery
+{
+    NSMutableDictionary *deserializedAttributes = [[NSMutableDictionary alloc] init];
+    
+    for (NSString *key in [_queryDictionary allKeys])
+    {
+        id object = [_queryDictionary objectForKey:key];
+        
+        //Handle NSDate
+        if ([object isKindOfClass:[NSDate class]])
+        {
+            object = [[self class] dateAttributeWithDate:object];
+        }
+        //Handle NSData
+        else if ([object isKindOfClass:[NSData class]])
+        {
+            object = [object base64EncodedString];
+        }
+        //Handle IQ_PFFile
+        else if ([object isKindOfClass:[IQ_PFFile class]])
+        {
+            object = [object coreSerializedAttribute];
+        }
+        //Handle IQ_PFObject Pointers
+        else if ([object isKindOfClass:[IQ_PFObject class]])
+        {
+            object = [object coreSerializedAttribute];
+        }
+        //Handle IQ_PFGeoPoint Pointers
+        else if ([object isKindOfClass:[IQ_PFGeoPoint class]])
+        {
+            object = [object coreSerializedAttribute];
+        }
+        //Handle IQ_PFRelation Pointers
+        else if ([object isKindOfClass:[IQ_PFRelation class]])
+        {
+            object = [object coreSerializedAttribute];
+        }
+        
+        if (object)     [deserializedAttributes setObject:object forKey:key];
+    }
+    
+    return deserializedAttributes;
+}
+
+
 -(NSDictionary*)generateParseQuery
 {
     NSMutableDictionary *queryDict = [[NSMutableDictionary alloc] init];
     
     if ([_queryDictionary count])
     {
-        [queryDict setObject:_queryDictionary forKey:kParseWhereKey];
+        [queryDict setObject:[self deserializedQuery] forKey:kParseWhereKey];
     }
     
     if (self.limit >=0)
@@ -357,7 +414,7 @@
 
 - (IQ_PFObject *)getFirstObject:(NSError **)error
 {
-    NSDictionary *queryDict = @{kParseWhereKey: _queryDictionary,kParseSkipKey:@(self.skip),kParseLimitKey:@1};
+    NSDictionary *queryDict = @{kParseWhereKey: [self deserializedQuery],kParseSkipKey:@(self.skip),kParseLimitKey:@1};
 
     NSDictionary *result = [[IQPFWebService service] queryWithParseClass:self.parseClassName query:queryDict error:error];
     
@@ -374,7 +431,7 @@
 
 - (void)getFirstObjectInBackgroundWithBlock:(IQ_PFObjectResultBlock)block
 {
-    NSDictionary *queryDict = @{kParseWhereKey: _queryDictionary,kParseSkipKey:@(self.skip),kParseLimitKey:@1};
+    NSDictionary *queryDict = @{kParseWhereKey: [self deserializedQuery],kParseSkipKey:@(self.skip),kParseLimitKey:@1};
 
     __block IQURLConnection *connection = [[IQPFWebService service] queryWithParseClass:self.parseClassName query:queryDict completionHandler:^(NSDictionary *result, NSError *error) {
         
@@ -418,7 +475,7 @@
 
 - (NSInteger)countObjects:(NSError **)error
 {
-    NSDictionary *queryDict = @{kParseWhereKey: _queryDictionary,kParseCountKey:@(YES),kParseSkipKey:@(self.skip),kParseLimitKey:@0};
+    NSDictionary *queryDict = @{kParseWhereKey: [self deserializedQuery],kParseCountKey:@(YES),kParseSkipKey:@(self.skip),kParseLimitKey:@0};
 
     NSDictionary *result = [[IQPFWebService service] queryWithParseClass:self.parseClassName query:queryDict error:error];
 
@@ -427,7 +484,7 @@
 
 - (void)countObjectsInBackgroundWithBlock:(IQ_PFIntegerResultBlock)block
 {
-    NSDictionary *queryDict = @{kParseWhereKey: _queryDictionary,kParseCountKey:@(YES),kParseSkipKey:@(self.skip),kParseLimitKey:@0};
+    NSDictionary *queryDict = @{kParseWhereKey: [self deserializedQuery],kParseCountKey:@(YES),kParseSkipKey:@(self.skip),kParseLimitKey:@0};
 
     __block IQURLConnection *connection = [[IQPFWebService service] queryWithParseClass:self.parseClassName query:queryDict completionHandler:^(NSDictionary *result, NSError *error) {
         

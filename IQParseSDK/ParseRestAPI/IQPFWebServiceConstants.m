@@ -84,5 +84,17 @@ NSString *const kParseISOKey                    =   @"iso";
 NSString *const kParseBase64Key                 =   @"base64";
 NSString *const kParseClassNameKey              =   @"className";
 
+NSString *const kParseAddRelationKey            =   @"AddRelation";
+NSString *const kParseRemoveRelationKey         =   @"RemoveRelation";
+NSString *const kParseBatchKey                  =   @"Batch";
+NSString *const kParseOpsKey                    =   @"ops";
+NSString *const kParseGeoPointKey               =   @"GeoPoint";
+NSString *const kParseLatitudeKey               =   @"latitude";
+NSString *const kParseLongitudeKey              =   @"longitude";
+
+NSString *const kParsemaxDistanceInMilesKey     =   @"$maxDistanceInMiles";
+NSString *const kParsemaxDistanceInKilometersKey=   @"$maxDistanceInKilometers";
+NSString *const kParsemaxDistanceInRadiansKey   =   @"$maxDistanceInRadians";
+
 
 

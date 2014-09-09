@@ -22,6 +22,7 @@
 // THE SOFTWARE.
 
 #import "IQ_PFGeoPoint.h"
+#import "IQPFWebServiceConstants.h"
 
 @implementation IQ_PFGeoPoint
 
@@ -44,6 +45,11 @@
     return geoPoint;
 }
 
+-(NSDictionary*)coreSerializedAttribute
+{
+    return @{kParse__TypeKey: kParseGeoPointKey, kParseLatitudeKey: @(self.latitude), kParseLongitudeKey: @(self.longitude)};
+}
+
 //+ (void)geoPointForCurrentLocationInBackground:(void(^)(IQ_PFGeoPoint *geoPoint, NSError *error))geoPointHandler
 
 //- (double)distanceInRadiansTo:(IQ_PFGeoPoint*)point
@@ -63,5 +69,7 @@
     
     return [myLocation distanceFromLocation:otherLocation]/1000.0;
 }
+
+
 
 @end

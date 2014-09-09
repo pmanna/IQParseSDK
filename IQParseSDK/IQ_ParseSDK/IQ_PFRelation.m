@@ -24,7 +24,29 @@
 #import "IQ_PFRelation.h"
 #import "IQPFWebServiceConstants.h"
 
+@interface IQ_PFObject ()
+
+-(NSDictionary*)coreSerializedAttribute;
+
+@end
+
+
 @implementation IQ_PFRelation
+{
+    NSMutableArray *_objectsToAdd;
+    NSMutableArray *_objectsToRemove;
+}
+
+- (instancetype)init
+{
+    self = [super init];
+    if (self)
+    {
+        _objectsToAdd = [[NSMutableArray alloc] init];
+        _objectsToRemove = [[NSMutableArray alloc] init];
+    }
+    return self;
+}
 
 -(NSDictionary*)coreSerializedAttribute
 {
@@ -32,4 +54,72 @@
 }
 
 
+//-(NSDictionary*)deserializedAttributes
+//{
+//    NSDictionary *addRelation = nil;
+//    NSDictionary *removeRelation = nil;
+//    
+//    if (_objectsToAdd.count)
+//    {
+//        NSMutableArray *addObjects = [[NSMutableArray alloc] init];
+//        
+//        for (IQ_PFObject *object in _objectsToAdd)
+//        {
+//            [addObjects addObject:[object coreSerializedAttribute]];
+//        }
+//        
+//        addRelation = @{kParse__OpKey: kParseAddRelationKey, kParseObjectsKey: addObjects};
+//    }
+//    
+//    if (_objectsToRemove)
+//    {
+//        NSMutableArray *removeObjects = [[NSMutableArray alloc] init];
+//        
+//        for (IQ_PFObject *object in _objectsToRemove)
+//        {
+//            [removeObjects addObject:[object coreSerializedAttribute]];
+//        }
+//        
+//        removeRelation = @{kParse__OpKey: kParseRemoveRelationKey, kParseObjectsKey: removeObjects};
+//    }
+//    
+//    //https://www.parse.com/questions/rest-api-addrelation-and-remove-relation-in-the-one-put
+//    if (_objectsToAdd.count && _objectsToRemove)
+//    {
+//        return @{kParse__OpKey: kParseBatchKey,kParseOpsKey:@[addRelation,removeRelation]};
+//    }
+//    else if (_objectsToAdd.count)
+//    {
+//        return addRelation;
+//    }
+//    else if (_objectsToRemove.count)
+//    {
+//        return removeRelation;
+//    }
+//    else
+//    {
+//        return @{};
+//    }
+//}
+//
+//- (IQ_PFQuery *)query
+//{
+//
+//}
+//
+//- (void)addObject:(IQ_PFObject *)object
+//{
+//    [_objectsToAdd addObject:object];
+//}
+//
+//- (void)removeObject:(IQ_PFObject *)object
+//{
+//    [_objectsToRemove addObject:object];
+//}
+
 @end
+
+
+
+
+

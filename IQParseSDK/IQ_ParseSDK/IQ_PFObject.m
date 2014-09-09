@@ -80,13 +80,8 @@
     {
         id object = [needUpdateAttributes objectForKey:key];
         
-        //Handle IQ_PFFile
-        if ([object isKindOfClass:[IQ_PFFile class]])
-        {
-            object = [object coreSerializedAttribute];
-        }
         //Handle NSDate
-        else if ([object isKindOfClass:[NSDate class]])
+        if ([object isKindOfClass:[NSDate class]])
         {
             object = [[self class] dateAttributeWithDate:object];
         }
@@ -95,8 +90,18 @@
         {
             object = [object base64EncodedString];
         }
+        //Handle IQ_PFFile
+        else if ([object isKindOfClass:[IQ_PFFile class]])
+        {
+            object = [object coreSerializedAttribute];
+        }
         //Handle IQ_PFObject Pointers
         else if ([object isKindOfClass:[IQ_PFObject class]])
+        {
+            object = [object coreSerializedAttribute];
+        }
+        //Handle IQ_PFGeoPoint Pointers
+        else if ([object isKindOfClass:[IQ_PFGeoPoint class]])
         {
             object = [object coreSerializedAttribute];
         }
@@ -132,14 +137,8 @@
 
             if ([object isKindOfClass:[NSDictionary class]])
             {
-                //Handle IQ_PFFile
-                if ([[object objectForKey:kParse__TypeKey] isEqualToString:kParseFileKey])
-                {
-                    object = [[IQ_PFFile alloc] init];
-                    [object serializeAttributes:[result objectForKey:key]];
-                }
                 //Handle NSDate
-                else if ([[object objectForKey:kParse__TypeKey] isEqualToString:kParseDateKey])
+                if ([[object objectForKey:kParse__TypeKey] isEqualToString:kParseDateKey])
                 {
                     object = [[self class] parseSDKDateFromString:[object objectForKey:kParseISOKey]];
                 }
@@ -148,10 +147,21 @@
                 {
                     object = [[object objectForKey:kParseBase64Key] base64DecodedData];
                 }
+                //Handle IQ_PFFile
+                else if ([[object objectForKey:kParse__TypeKey] isEqualToString:kParseFileKey])
+                {
+                    object = [[IQ_PFFile alloc] init];
+                    [object serializeAttributes:[result objectForKey:key]];
+                }
                 //Handle IQ_PFObject Pointers
                 else if ([[object objectForKey:kParse__TypeKey] isEqualToString:kParsePointerKey])
                 {
                     object = [IQ_PFObject objectWithoutDataWithClassName:[object objectForKey:kParseClassNameKey] objectId:[object objectForKey:kParseObjectIdKey]];
+                }
+                //Handle IQ_PFGeoPoint Pointers
+                else if ([[object objectForKey:kParse__TypeKey] isEqualToString:kParseGeoPointKey])
+                {
+                    object = [IQ_PFGeoPoint geoPointWithLatitude:[[object objectForKey:kParseLatitudeKey] doubleValue] longitude:[[object objectForKey:kParseLongitudeKey] doubleValue]];
                 }
                 //Handle IQ_PFRelation Pointers
                 else if ([[object objectForKey:kParse__TypeKey] isEqualToString:kParseRelationKey])

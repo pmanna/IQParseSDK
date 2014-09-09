@@ -83,6 +83,19 @@ extern NSString *const kParseNameKey;
 extern NSString *const kParseBase64Key;
 extern NSString *const kParseClassNameKey;
 
+extern NSString *const kParseAddRelationKey;
+extern NSString *const kParseRemoveRelationKey;
+extern NSString *const kParseBatchKey;
+extern NSString *const kParseOpsKey;
+extern NSString *const kParseGeoPointKey;
+extern NSString *const kParseLatitudeKey;
+extern NSString *const kParseLongitudeKey;
+
+extern NSString *const kParsemaxDistanceInMilesKey;
+extern NSString *const kParsemaxDistanceInKilometersKey;
+extern NSString *const kParsemaxDistanceInRadiansKey;
+
+
 
 
 
