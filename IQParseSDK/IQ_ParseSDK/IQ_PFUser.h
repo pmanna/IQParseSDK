@@ -53,11 +53,11 @@
 + (void)logInWithUsernameInBackground:(NSString *)username password:(NSString *)password;
 + (void)logInWithUsernameInBackground:(NSString *)username password:(NSString *)password target:(id)target selector:(SEL)selector;
 + (void)logInWithUsernameInBackground:(NSString *)username password:(NSString *)password block:(IQ_PFUserResultBlock)block;
-//+ (instancetype)become:(NSString *)sessionToken;
-//+ (instancetype)become:(NSString *)sessionToken error:(NSError **)error;
-//+ (void)becomeInBackground:(NSString *)sessionToken;
-//+ (void)becomeInBackground:(NSString *)sessionToken target:(id)target selector:(SEL)selector;
-//+ (void)becomeInBackground:(NSString *)sessionToken block:(IQ_PFUserResultBlock)block;
++ (instancetype)become:(NSString *)sessionToken;
++ (instancetype)become:(NSString *)sessionToken error:(NSError **)error;
++ (void)becomeInBackground:(NSString *)sessionToken;
++ (void)becomeInBackground:(NSString *)sessionToken target:(id)target selector:(SEL)selector;
++ (void)becomeInBackground:(NSString *)sessionToken block:(IQ_PFUserResultBlock)block;
 
 + (void)logOut;
 

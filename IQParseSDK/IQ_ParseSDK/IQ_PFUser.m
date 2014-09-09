@@ -186,7 +186,7 @@ extern NSString *const kParsePasswordKey;
         
         if ([result objectForKey:kParseSessionTokenKey])
         {
-            IQ_PFUser *user = [[IQ_PFUser alloc] init];
+            user = [[IQ_PFUser alloc] init];
             [user serializeAttributes:result];
 
             [self setCurrentUser:user];
@@ -197,11 +197,66 @@ extern NSString *const kParsePasswordKey;
     }];
 }
 
-//+ (instancetype)become:(NSString *)sessionToken;
-//+ (instancetype)become:(NSString *)sessionToken error:(NSError **)error;
-//+ (void)becomeInBackground:(NSString *)sessionToken;
-//+ (void)becomeInBackground:(NSString *)sessionToken target:(id)target selector:(SEL)selector;
-//+ (void)becomeInBackground:(NSString *)sessionToken block:(IQ_PFUserResultBlock)block;
++ (instancetype)become:(NSString *)sessionToken
+{
+    return [self become:sessionToken error:nil];
+}
+
++ (instancetype)become:(NSString *)sessionToken error:(NSError **)error
+{
+    NSDictionary *result = [[IQPFWebService service] validateAccessToken:@{kParse_X_Parse_Session_Token: sessionToken} error:error];
+    
+    if ([result objectForKey:kParseSessionTokenKey])
+    {
+        IQ_PFUser *user = [[IQ_PFUser alloc] init];
+        [user serializeAttributes:result];
+        
+        [self setCurrentUser:user];
+        return user;
+    }
+    else
+    {
+        return nil;
+    }
+}
+
++ (void)becomeInBackground:(NSString *)sessionToken
+{
+    [self becomeInBackground:sessionToken block:NULL];
+}
+
++ (void)becomeInBackground:(NSString *)sessionToken target:(id)target selector:(SEL)selector
+{
+    [self becomeInBackground:sessionToken block:^(IQ_PFUser *user, NSError *error) {
+
+        NSInvocation *invocation = [NSInvocation invocationWithMethodSignature:[target methodSignatureForSelector:selector]];
+        invocation.target = target;
+        invocation.selector = selector;
+        [invocation setArgument:&user atIndex:2];
+        [invocation setArgument:&error atIndex:3];
+        [invocation invoke];
+
+    }];
+}
+
++ (void)becomeInBackground:(NSString *)sessionToken block:(IQ_PFUserResultBlock)block
+{
+    [[IQPFWebService service] validateAccessToken:@{kParse_X_Parse_Session_Token: sessionToken} completionHandler:^(NSDictionary *result, NSError *error) {
+
+        IQ_PFUser *user;
+        
+        if ([result objectForKey:kParseSessionTokenKey])
+        {
+            user = [[IQ_PFUser alloc] init];
+            [user serializeAttributes:result];
+            
+            [self setCurrentUser:user];
+        }
+        
+        if (block)  block(user,error);
+
+    }];
+}
 
 + (void)logOut
 {

@@ -75,6 +75,10 @@
 -(IQURLConnection*)requestPasswordReset:(NSDictionary*)emailInfo completionHandler:(IQDictionaryCompletionBlock)completion;
 -(NSDictionary*)requestPasswordReset:(NSDictionary*)emailInfo error:(NSError**)error;
 
+//Validate AccessToken
+-(IQURLConnection*)validateAccessToken:(NSDictionary*)accessTokenInfo completionHandler:(IQDictionaryCompletionBlock)completion;
+-(NSDictionary*)validateAccessToken:(NSDictionary*)accessTokenInfo error:(NSError**)error;
+
 //Updating Users
 -(IQURLConnection*)updateUser:(NSDictionary*)userInfo objectId:(NSString*)objectId completionHandler:(IQDictionaryCompletionBlock)completion;
 -(NSDictionary*)updateUser:(NSDictionary*)userInfo objectId:(NSString*)objectId error:(NSError**)error;
