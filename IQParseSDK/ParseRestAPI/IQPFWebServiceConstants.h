@@ -91,9 +91,11 @@ extern NSString *const kParseGeoPointKey;
 extern NSString *const kParseLatitudeKey;
 extern NSString *const kParseLongitudeKey;
 
-extern NSString *const kParsemaxDistanceInMilesKey;
-extern NSString *const kParsemaxDistanceInKilometersKey;
-extern NSString *const kParsemaxDistanceInRadiansKey;
+extern NSString *const kParseMaxDistanceInMilesKey;
+extern NSString *const kParseMaxDistanceInKilometersKey;
+extern NSString *const kParseMaxDistanceInRadiansKey;
+extern NSString *const kParseBoxKey;
+extern NSString *const kParseWithinKey;
 
 
 

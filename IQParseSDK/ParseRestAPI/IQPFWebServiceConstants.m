@@ -92,9 +92,9 @@ NSString *const kParseGeoPointKey               =   @"GeoPoint";
 NSString *const kParseLatitudeKey               =   @"latitude";
 NSString *const kParseLongitudeKey              =   @"longitude";
 
-NSString *const kParsemaxDistanceInMilesKey     =   @"$maxDistanceInMiles";
-NSString *const kParsemaxDistanceInKilometersKey=   @"$maxDistanceInKilometers";
-NSString *const kParsemaxDistanceInRadiansKey   =   @"$maxDistanceInRadians";
-
-
+NSString *const kParseMaxDistanceInMilesKey     =   @"$maxDistanceInMiles";
+NSString *const kParseMaxDistanceInKilometersKey=   @"$maxDistanceInKilometers";
+NSString *const kParseMaxDistanceInRadiansKey   =   @"$maxDistanceInRadians";
+NSString *const kParseBoxKey                    =   @"$box";
+NSString *const kParseWithinKey                 =   @"$within";
 
