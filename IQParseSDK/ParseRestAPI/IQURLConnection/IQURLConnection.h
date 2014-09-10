@@ -32,6 +32,7 @@
 @property(nonatomic, assign, readonly) CGFloat downloadProgress;
 @property(nonatomic, assign, readonly) CGFloat uploadProgress;
 @property(nonatomic, strong, readonly) NSData *responseData;
+@property(nonatomic, strong, readonly) NSError *error;
 
 @property(nonatomic, strong) IQProgressBlock         uploadProgressBlock;
 @property(nonatomic, strong) IQProgressBlock         downloadProgressBlock;

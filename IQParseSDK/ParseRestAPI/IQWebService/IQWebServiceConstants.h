@@ -157,6 +157,8 @@ extern NSString *const kIQContentTypeMultipartAlternative;
 extern NSString *const kIQContentTypeMultipartRelated;
 /*! @abstract @"multipart/form-data"  */
 extern NSString *const kIQContentTypeMultipartFormData;
+/*! @abstract @@"boundary"  */
+extern NSString *const kIQContentTypeBoundary;
 /*! @abstract @"multipart/encrypted"  */
 extern NSString *const kIQContentTypeMultipartEncrypted;
 //For text

@@ -55,7 +55,7 @@ IQ_PFUser *_currentUser;
 
 +(void)setCurrentUser:(IQ_PFUser*)currentUser
 {
-    [[IQPFWebService service] setDefaultHeaderValue:[currentUser sessionToken] forHeaderField:kParse_X_Parse_Session_Token];
+    [[IQPFWebService service] addDefaultHeaderValue:[currentUser sessionToken] forHeaderField:kParse_X_Parse_Session_Token];
 
     _currentUser = currentUser;
 }

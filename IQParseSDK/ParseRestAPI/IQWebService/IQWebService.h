@@ -37,7 +37,8 @@
 @property(nonatomic, retain) NSData *endBodyData;
 
 -(NSString*)headerForField:(NSString*)headerField;
--(void)setDefaultHeaderValue:(NSString*)header forHeaderField:(NSString*)headerField;
+-(void)addDefaultHeaderValue:(NSString*)header forHeaderField:(NSString*)headerField;
+-(void)removeDefaultHeaderForField:(NSString*)headerField;
 
 //Shared Instance
 +(instancetype)service;
@@ -51,18 +52,24 @@
 
 //Request with content-Type and body
 -(IQURLConnection*)requestWithPath:(NSString*)path httpMethod:(NSString*)method contentType:(NSString*)contentType httpBody:(NSData*)httpBody completionHandler:(IQDictionaryCompletionBlock)completionHandler;
+-(IQURLConnection*)requestWithPath:(NSString*)path httpMethod:(NSString*)method contentType:(NSString*)contentType httpBody:(NSData*)httpBody dataCompletionHandler:(IQDataCompletionBlock)completionHandler;
 
 //Request with URL
 -(IQURLConnection*)requestWithURL:(NSURL*)url httpMethod:(NSString*)method contentType:(NSString*)contentType httpBody:(NSData*)httpBody dataCompletionHandler:(IQDataCompletionBlock)completionHandler;
+
+-(IQURLConnection*)fileUploadRequestWithPath:(NSString*)path parameter:(NSDictionary*)parameter uploadFiles:(NSArray*)files mimeType:(NSString*)mimeType uploadProgressBlock:(IQProgressBlock)uploadProgress responseBlock:(IQDictionaryCompletionBlock)completionHandler;
 
 #pragma mark -
 #pragma mark - Synchronous Requests
 //Synchronous request
 -(NSDictionary*)synchronousRequestWithPath:(NSString*)path httpMethod:(NSString*)method parameter:(NSDictionary*)parameter error:(NSError**)error;
+-(NSData*)synchronousDataRequestWithPath:(NSString*)path httpMethod:(NSString*)method parameter:(NSDictionary*)parameter error:(NSError**)error;
+
 -(NSDictionary*)synchronousRequestWithPath:(NSString*)path httpMethod:(NSString*)method contentType:(NSString*)contentType httpBody:(NSData*)httpBody error:(NSError**)error;
+-(NSData*)synchronousDataRequestWithPath:(NSString*)path httpMethod:(NSString*)method contentType:(NSString*)contentType httpBody:(NSData*)httpBody error:(NSError**)error;
+
 -(NSData*)synchronousRequestWithURL:(NSURL*)url httpMethod:(NSString*)method contentType:(NSString*)contentType httpBody:(NSData*)httpBody error:(NSError**)error;
 
--(NSData*)synchronousDataRequestWithPath:(NSString*)path httpMethod:(NSString*)method contentType:(NSString*)contentType httpBody:(NSData*)httpBody error:(NSError**)error;
--(NSData*)synchronousDataRequestWithPath:(NSString*)path httpMethod:(NSString*)method parameter:(NSDictionary*)parameter error:(NSError**)error;
+
 
 @end

@@ -196,18 +196,18 @@
 
 -(IQURLConnection*)validateAccessToken:(NSDictionary*)accessTokenInfo completionHandler:(IQDictionaryCompletionBlock)completion
 {
-    [self setDefaultHeaderValue:[accessTokenInfo objectForKey:kParse_X_Parse_Session_Token] forHeaderField:kParse_X_Parse_Session_Token];
+    [self addDefaultHeaderValue:[accessTokenInfo objectForKey:kParse_X_Parse_Session_Token] forHeaderField:kParse_X_Parse_Session_Token];
     IQURLConnection * connection = [self requestWithPath:@"users/me" httpMethod:kIQHTTPMethodGET parameter:accessTokenInfo completionHandler:completion];
-    [self setDefaultHeaderValue:nil forHeaderField:kParse_X_Parse_Session_Token];
+    [self addDefaultHeaderValue:nil forHeaderField:kParse_X_Parse_Session_Token];
     
     return connection;
 }
 
 -(NSDictionary*)validateAccessToken:(NSDictionary*)accessTokenInfo error:(NSError**)error
 {
-    [self setDefaultHeaderValue:[accessTokenInfo objectForKey:kParse_X_Parse_Session_Token] forHeaderField:kParse_X_Parse_Session_Token];
+    [self addDefaultHeaderValue:[accessTokenInfo objectForKey:kParse_X_Parse_Session_Token] forHeaderField:kParse_X_Parse_Session_Token];
     NSDictionary *dict = [self synchronousRequestWithPath:@"users/me" httpMethod:kIQHTTPMethodGET parameter:accessTokenInfo error:error];
-    [self setDefaultHeaderValue:nil forHeaderField:kParse_X_Parse_Session_Token];
+    [self addDefaultHeaderValue:nil forHeaderField:kParse_X_Parse_Session_Token];
     
     return dict;
 }

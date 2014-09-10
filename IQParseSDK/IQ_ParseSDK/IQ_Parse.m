@@ -34,8 +34,8 @@ static NSString *PARSE_REST_API_KEY;
     PARSE_APPLICATION_ID = applicationId;
     PARSE_REST_API_KEY = restAPIKey;
     
-    [[IQPFWebService service] setDefaultHeaderValue:[IQ_Parse getApplicationId] forHeaderField:kParse_X_Parse_Application_Id];
-    [[IQPFWebService service] setDefaultHeaderValue:[IQ_Parse getRestAPIKey] forHeaderField:kParse_X_Parse_REST_API_Key];
+    [[IQPFWebService service] addDefaultHeaderValue:[IQ_Parse getApplicationId] forHeaderField:kParse_X_Parse_Application_Id];
+    [[IQPFWebService service] addDefaultHeaderValue:[IQ_Parse getRestAPIKey] forHeaderField:kParse_X_Parse_REST_API_Key];
 }
 
 + (NSString *)getApplicationId

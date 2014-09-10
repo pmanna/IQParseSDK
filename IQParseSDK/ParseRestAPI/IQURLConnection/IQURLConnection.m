@@ -85,10 +85,7 @@ static NSOperationQueue *queue;
         else
         {
             dispatch_sync(dispatch_get_main_queue(), ^{
-                if (_downloadProgressBlock)
-                {
-                    _downloadProgressBlock(progress);
-                }
+                if (_downloadProgressBlock) _downloadProgressBlock(progress);
             });
         }
     }
@@ -105,10 +102,7 @@ static NSOperationQueue *queue;
         else
         {
             dispatch_sync(dispatch_get_main_queue(), ^{
-                if (_uploadProgressBlock)
-                {
-                    _uploadProgressBlock(progress);
-                }
+                if (_uploadProgressBlock)   _uploadProgressBlock(progress);
             });
         }
     }
@@ -125,10 +119,7 @@ static NSOperationQueue *queue;
         else
         {
             dispatch_sync(dispatch_get_main_queue(), ^{
-                if (_dataCompletionBlock)
-                {
-                    _dataCompletionBlock(data,error);
-                }
+                if (_dataCompletionBlock)   _dataCompletionBlock(data,error);
             });
         }
     }
@@ -156,7 +147,7 @@ static NSOperationQueue *queue;
 
 - (void)connection:(NSURLConnection *)connection didReceiveResponse:(NSHTTPURLResponse *)response
 {
-    _response = (NSHTTPURLResponse*)response;
+    _response = response;
     [self sendResponse:_response];
 }
 
@@ -169,13 +160,21 @@ static NSOperationQueue *queue;
 
 - (void)connection:(NSURLConnection *)connection didFailWithError:(NSError *)error
 {
+    _error = error;
+
     [self sendCompletionData:_data error:error];
 }
 
 -(void)cancel
 {
     [super cancel];
-//    [self sendCompletionData:_data error:[NSError errorWithDomain:@"UserCancelDomain" code:100 userInfo:nil]];
+    
+//    [self sendCompletionData:nil error:[NSError errorWithDomain:@"UserCancelDomain" code:100 userInfo:nil]];
+
+    _responseBlock = NULL;
+    _uploadProgressBlock = NULL;
+    _downloadProgressBlock = NULL;
+    _dataCompletionBlock = NULL;
 }
 
 - (void)connectionDidFinishLoading:(NSURLConnection *)connection
@@ -197,12 +196,6 @@ static NSOperationQueue *queue;
 {
     [self sendUploadProgress:((CGFloat)totalBytesWritten/(CGFloat)totalBytesExpectedToWrite)];
 }
-
-//- (BOOL)connectionShouldUseCredentialStorage:(NSURLConnection *)connection
-//{
-//    NSLog(@"%@",connection);
-//    return NO;
-//}
 
 //https://developer.apple.com/library/ios/technotes/tn2232/_index.html
 - (void)connection:(NSURLConnection *)connection willSendRequestForAuthenticationChallenge:(NSURLAuthenticationChallenge *)challenge
@@ -260,20 +253,17 @@ static NSOperationQueue *queue;
 //            [[challenge sender] useCredential:credential forAuthenticationChallenge:challenge];
 //        }
 //    }
-    else if ([[challenge protectionSpace] authenticationMethod] == NSURLAuthenticationMethodDefault ||
-             [[challenge protectionSpace] authenticationMethod] == NSURLAuthenticationMethodNTLM)
-    {
+//    else if ([[challenge protectionSpace] authenticationMethod] == NSURLAuthenticationMethodDefault ||
+//             [[challenge protectionSpace] authenticationMethod] == NSURLAuthenticationMethodNTLM)
+//    {
         // For normal authentication based on username and password. This could be NTLM or Default.
-        NSURLCredential *credential = [NSURLCredential credentialWithUser:@"admin_api" password:@"uMQFhe2zCex" persistence:NSURLCredentialPersistenceForSession];
-        [[challenge sender] useCredential:credential forAuthenticationChallenge:challenge];
-    }
+//        NSURLCredential *credential = [NSURLCredential credentialWithUser:@"username" password:@"password" persistence:NSURLCredentialPersistenceForSession];
+//        [[challenge sender] useCredential:credential forAuthenticationChallenge:challenge];
+//    }
     else
     {
         [sender performDefaultHandlingForAuthenticationChallenge:challenge];
     }
-    
-    
-    
 }
 
 @end

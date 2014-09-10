@@ -86,6 +86,7 @@ NSString *const kIQContentTypeMultipartAlternative          =   @"multipart/alte
 NSString *const kIQContentTypeMultipartRelated              =   @"multipart/related";
 NSString *const kIQContentTypeMultipartFormData             =   @"multipart/form-data";
 NSString *const kIQContentTypeMultipartEncrypted            =   @"multipart/encrypted";
+NSString *const kIQContentTypeBoundary                      =   @"boundary";
 //For text
 NSString *const kIQContentTypeTextCmd                       =   @"text/cmd";
 NSString *const kIQContentTypeTextCss                       =   @"text/css";
