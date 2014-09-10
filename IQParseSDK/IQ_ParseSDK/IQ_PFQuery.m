@@ -361,7 +361,7 @@
 {
     NSDictionary *result = [[IQPFWebService service] queryWithParseClass:self.parseClassName query:[self generateParseQuery] error:error];
     
-    if (result)
+    if ([result objectForKey:kParseResultsKey])
     {
         return [self convertToParseObjects:[result objectForKey:kParseResultsKey]];
     }
@@ -381,7 +381,7 @@
         {
             NSArray *parseObjects;
             
-            if (result)
+            if ([result objectForKey:kParseResultsKey])
             {
                 parseObjects = [self convertToParseObjects:[result objectForKey:kParseResultsKey]];
             }

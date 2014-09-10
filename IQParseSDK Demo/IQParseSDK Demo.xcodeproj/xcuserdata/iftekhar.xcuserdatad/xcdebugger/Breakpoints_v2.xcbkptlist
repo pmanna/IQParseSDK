@@ -23,25 +23,9 @@
             timestampString = "431906289.669243"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "377"
-            endingLineNumber = "377"
-            landmarkName = "-getFirstObjectInBackgroundWithBlock:"
-            landmarkType = "5">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            shouldBeEnabled = "Yes"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "../IQParseSDK/IQ_ParseSDK/IQ_PFQuery.m"
-            timestampString = "431906289.669243"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
             startingLineNumber = "421"
             endingLineNumber = "421"
-            landmarkName = "-countObjects:"
+            landmarkName = "-getFirstObject:"
             landmarkType = "5">
          </BreakpointContent>
       </BreakpointProxy>
@@ -57,23 +41,7 @@
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "430"
             endingLineNumber = "430"
-            landmarkName = "-countObjectsInBackgroundWithBlock:"
-            landmarkType = "5">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            shouldBeEnabled = "Yes"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "../IQParseSDK/ParseRestAPI/IQWebService/IQWebService.m"
-            timestampString = "431901463.294358"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "175"
-            endingLineNumber = "175"
-            landmarkName = "-requestWithURL:httpMethod:contentType:httpBody:dataCompletionHandler:"
+            landmarkName = "-getFirstObject:"
             landmarkType = "5">
          </BreakpointContent>
       </BreakpointProxy>
@@ -89,7 +57,7 @@
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "327"
             endingLineNumber = "327"
-            landmarkName = "-synchronousRequestWithURL:httpMethod:contentType:httpBody:error:"
+            landmarkName = "-synchronousDataRequestWithPath:httpMethod:parameter:error:"
             landmarkType = "5">
          </BreakpointContent>
       </BreakpointProxy>

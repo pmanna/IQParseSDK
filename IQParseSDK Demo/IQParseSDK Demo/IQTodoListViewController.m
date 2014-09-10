@@ -27,6 +27,7 @@
     [super viewDidLoad];
     
     self.refreshControl = [[UIRefreshControl alloc] init];
+    self.refreshControl.tintColor = [UIColor whiteColor];
     [self.refreshControl addTarget:self action:@selector(getObjects) forControlEvents:UIControlEventValueChanged];
 
     self.tableView.allowsMultipleSelectionDuringEditing = NO;
