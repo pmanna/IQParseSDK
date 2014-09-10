@@ -33,11 +33,6 @@
 
     dropDownCategory.itemList = @[@"Home",@"Work",@"Entertainment"];
     dropDownDate.dropDownMode = IQDropDownModeDatePicker;
-}
-
--(void)viewWillAppear:(BOOL)animated
-{
-    [super viewWillAppear:animated];
     
     if (self.object)
     {
@@ -47,6 +42,11 @@
         imageViewTodo.file              = [self.object objectForKey:@"image"];
         [imageViewTodo loadInBackground];
     }
+}
+
+-(void)viewWillAppear:(BOOL)animated
+{
+    [super viewWillAppear:animated];
 }
 
 - (IBAction)chooseImageAction:(UIButton *)sender
