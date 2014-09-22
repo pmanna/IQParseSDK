@@ -1,5 +1,5 @@
 //
-//  IQPFWebServiceConstants.h
+//  IQPFHTTPServiceConstants.h
 // https://github.com/hackiftekhar/IQParseSDK
 // Copyright (c) 2013-14 Iftekhar Qurashi.
 //

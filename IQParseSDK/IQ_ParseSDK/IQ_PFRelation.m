@@ -22,7 +22,7 @@
 // THE SOFTWARE.
 
 #import "IQ_PFRelation.h"
-#import "IQPFWebServiceConstants.h"
+#import "IQPFHTTPServiceConstants.h"
 
 @interface IQ_PFObject ()
 

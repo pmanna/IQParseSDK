@@ -22,7 +22,7 @@
 // THE SOFTWARE.
 
 #import "IQ_PFCloud.h"
-#import "IQPFWebService.h"
+#import "IQPFHTTPService.h"
 
 @implementation IQ_PFCloud
 
@@ -33,7 +33,7 @@
 
 + (id)callFunction:(NSString *)function withParameters:(NSDictionary *)parameters error:(NSError **)error
 {
-    NSData *result = [[IQPFWebService service] callFunction:function withParameters:parameters error:error];
+    NSData *result = [[IQPFHTTPService service] callFunction:function withParameters:parameters error:error];
 
     NSDictionary *jsonResponse;
     NSString *string;
@@ -54,7 +54,7 @@
 
 + (void)callFunctionInBackground:(NSString *)function withParameters:(NSDictionary *)parameters block:(IQ_PFIdResultBlock)block
 {
-    [[IQPFWebService service] callFunction:function withParameters:parameters completionHandler:^(NSData *result, NSError *error) {
+    [[IQPFHTTPService service] callFunction:function withParameters:parameters completionHandler:^(NSData *result, NSError *error) {
         
         NSDictionary *jsonResponse;
         NSString *string;

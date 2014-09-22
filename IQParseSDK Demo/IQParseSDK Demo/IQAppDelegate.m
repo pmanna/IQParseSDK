@@ -7,13 +7,13 @@
 //
 
 #import "IQAppDelegate.h"
-#import "IQPFWebService.h"
+#import "IQPFHTTPService.h"
 
 @implementation IQAppDelegate
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
-    [[IQPFWebService service] setLogEnabled:YES];
+    [[IQPFHTTPService service] setLogEnabled:YES];
 
     [IQ_Parse setApplicationId:@"<PARSE_APPLICATION_ID>"
                     restAPIKey:@"<PARSE_REST_API_KEY>"];

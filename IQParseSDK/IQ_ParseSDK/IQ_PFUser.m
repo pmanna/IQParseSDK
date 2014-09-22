@@ -22,7 +22,7 @@
 // THE SOFTWARE.
 
 #import "IQ_PFUser.h"
-#import "IQPFWebService.h"
+#import "IQPFHTTPService.h"
 
 @interface IQ_PFObject (Subclassing)
 
@@ -55,7 +55,7 @@ IQ_PFUser *_currentUser;
 
 +(void)setCurrentUser:(IQ_PFUser*)currentUser
 {
-    [[IQPFWebService service] addDefaultHeaderValue:[currentUser sessionToken] forHeaderField:kParse_X_Parse_Session_Token];
+    [[IQPFHTTPService service] addDefaultHeaderValue:[currentUser sessionToken] forHeaderField:kParse_X_Parse_Session_Token];
 
     _currentUser = currentUser;
 }
@@ -86,7 +86,7 @@ IQ_PFUser *_currentUser;
 - (BOOL)signUp:(NSError **)error
 {
     NSDictionary *userInfo = @{kParseUsernameKey: self.username, kParsePasswordKey:self.password};
-    NSDictionary *result = [[IQPFWebService service] signUpUser:userInfo error:error];
+    NSDictionary *result = [[IQPFHTTPService service] signUpUser:userInfo error:error];
     
     if ([result objectForKey:kParseSessionTokenKey])
     {
@@ -112,7 +112,7 @@ extern NSString *const kParsePasswordKey;
 {
     NSDictionary *userInfo = @{kParseUsernameKey: self.username, kParsePasswordKey:self.password};
 
-    [[IQPFWebService service] signUpUser:userInfo completionHandler:^(NSDictionary *result, NSError *error) {
+    [[IQPFHTTPService service] signUpUser:userInfo completionHandler:^(NSDictionary *result, NSError *error) {
 
     }];
 }
@@ -140,7 +140,7 @@ extern NSString *const kParsePasswordKey;
 {
     NSDictionary *userInfo = @{kParseUsernameKey: username, kParsePasswordKey:password};
     
-    NSDictionary *result = [[IQPFWebService service] loginUser:userInfo error:error];
+    NSDictionary *result = [[IQPFHTTPService service] loginUser:userInfo error:error];
 
     if ([result objectForKey:kParseSessionTokenKey])
     {
@@ -180,7 +180,7 @@ extern NSString *const kParsePasswordKey;
 {
     NSDictionary *userInfo = @{kParseUsernameKey: username, kParsePasswordKey:password};
 
-    [[IQPFWebService service] loginUser:userInfo completionHandler:^(NSDictionary *result, NSError *error) {
+    [[IQPFHTTPService service] loginUser:userInfo completionHandler:^(NSDictionary *result, NSError *error) {
 
         IQ_PFUser *user;
         
@@ -204,7 +204,7 @@ extern NSString *const kParsePasswordKey;
 
 + (instancetype)become:(NSString *)sessionToken error:(NSError **)error
 {
-    NSDictionary *result = [[IQPFWebService service] validateAccessToken:@{kParse_X_Parse_Session_Token: sessionToken} error:error];
+    NSDictionary *result = [[IQPFHTTPService service] validateAccessToken:@{kParse_X_Parse_Session_Token: sessionToken} error:error];
     
     if ([result objectForKey:kParseSessionTokenKey])
     {
@@ -241,7 +241,7 @@ extern NSString *const kParsePasswordKey;
 
 + (void)becomeInBackground:(NSString *)sessionToken block:(IQ_PFUserResultBlock)block
 {
-    [[IQPFWebService service] validateAccessToken:@{kParse_X_Parse_Session_Token: sessionToken} completionHandler:^(NSDictionary *result, NSError *error) {
+    [[IQPFHTTPService service] validateAccessToken:@{kParse_X_Parse_Session_Token: sessionToken} completionHandler:^(NSDictionary *result, NSError *error) {
 
         IQ_PFUser *user;
         
@@ -272,7 +272,7 @@ extern NSString *const kParsePasswordKey;
 {
     NSDictionary *dict = @{kParseEmailKey: email};
     
-    NSDictionary *result = [[IQPFWebService service] requestPasswordReset:dict error:error];
+    NSDictionary *result = [[IQPFHTTPService service] requestPasswordReset:dict error:error];
     
     if (result)
     {
@@ -307,7 +307,7 @@ extern NSString *const kParsePasswordKey;
 {
     NSDictionary *dict = @{kParseEmailKey: email};
 
-    [[IQPFWebService service] requestPasswordReset:dict completionHandler:^(NSDictionary *result, NSError *error) {
+    [[IQPFHTTPService service] requestPasswordReset:dict completionHandler:^(NSDictionary *result, NSError *error) {
 
         if (result)
         {

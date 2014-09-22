@@ -1,6 +1,6 @@
 //
-//  IQWebServiceConstants.m
-// https://github.com/hackiftekhar/IQWebService
+//  IQHTTPConstants.m
+// https://github.com/hackiftekhar/IQHTTPService
 // Copyright (c) 2013-14 Iftekhar Qurashi.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -25,7 +25,7 @@
 #import <Foundation/NSObjCRuntime.h>
 #import <MobileCoreServices/MobileCoreServices.h>
 #import "IQURLConnection.h"
-#import "IQWebServiceConstants.h"
+#import "IQHTTPConstants.h"
 
 @class NSString, NSData;
 
@@ -116,7 +116,6 @@ NSString *const kIQHTTPMethodPOST                           =   @"POST";
 NSString *const kIQHTTPMethodGET                            =   @"GET";
 NSString *const kIQHTTPMethodPUT                            =   @"PUT";
 NSString *const kIQHTTPMethodDELETE                         =   @"DELETE";
-
 
 
 void printHTTPRequest(NSURLRequest *request)

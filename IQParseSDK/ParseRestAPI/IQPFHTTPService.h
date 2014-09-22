@@ -1,5 +1,5 @@
 //
-//  IQPFWebService.h
+//  IQPFHTTPService.h
 // https://github.com/hackiftekhar/IQParseSDK
 // Copyright (c) 2013-14 Iftekhar Qurashi.
 //
@@ -22,10 +22,10 @@
 // THE SOFTWARE.
 
 
-#import "IQWebService.h"
-#import "IQPFWebServiceConstants.h"
+#import "IQHTTPService.h"
+#import "IQPFHTTPServiceConstants.h"
 
-@interface IQPFWebService : IQWebService
+@interface IQPFHTTPService : IQHTTPService
 
 #pragma mark -
 #pragma mark - Objects

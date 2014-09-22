@@ -22,7 +22,7 @@
 // THE SOFTWARE.
 
 #import "IQ_PFFile.h"
-#import "IQPFWebService.h"
+#import "IQPFHTTPService.h"
 #import "IQURLConnection.h"
 #import <Foundation/NSData.h>
 #import <Foundation/NSDictionary.h>
@@ -93,7 +93,7 @@ NSString *const kParseFileContentTypeText   =   @"text/plain";
 
 - (BOOL)save:(NSError **)error
 {
-    NSDictionary *result = [[IQPFWebService service] saveFileData:_data fileName:self.name contentType:_contentType error:error];
+    NSDictionary *result = [[IQPFHTTPService service] saveFileData:_data fileName:self.name contentType:_contentType error:error];
     
     if (result)
     {
@@ -118,7 +118,7 @@ NSString *const kParseFileContentTypeText   =   @"text/plain";
 
 - (void)saveInBackgroundWithBlock:(IQ_PFBooleanResultBlock)block progressBlock:(IQ_PFProgressBlock)progressBlock
 {
-    __block IQURLConnection *connection = [[IQPFWebService service] saveFileData:_data fileName:self.name contentType:_contentType uploadProgressBlock:^(CGFloat progress) {
+    __block IQURLConnection *connection = [[IQPFHTTPService service] saveFileData:_data fileName:self.name contentType:_contentType uploadProgressBlock:^(CGFloat progress) {
         
         if (progressBlock)
         {
@@ -170,7 +170,7 @@ NSString *const kParseFileContentTypeText   =   @"text/plain";
 {
     if (_data == nil)
     {
-        _data = [[IQPFWebService service] getDataWithFileUrl:[NSURL URLWithString:_url] error:error];
+        _data = [[IQPFHTTPService service] getDataWithFileUrl:[NSURL URLWithString:_url] error:error];
     }
 
     return _data;
@@ -193,7 +193,7 @@ NSString *const kParseFileContentTypeText   =   @"text/plain";
     }
     else
     {
-        __block IQURLConnection *connection = [[IQPFWebService service] getDataWithFileUrl:[NSURL URLWithString:_url] downloadProgressBlock:^(CGFloat progress) {
+        __block IQURLConnection *connection = [[IQPFHTTPService service] getDataWithFileUrl:[NSURL URLWithString:_url] downloadProgressBlock:^(CGFloat progress) {
             
             if (progressBlock)
             {

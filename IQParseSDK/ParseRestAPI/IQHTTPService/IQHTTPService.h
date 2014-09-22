@@ -1,6 +1,6 @@
 //
-//  IQWebService.h
-// https://github.com/hackiftekhar/IQWebService
+//  IQHTTPService.h
+// https://github.com/hackiftekhar/IQHTTPService
 // Copyright (c) 2013-14 Iftekhar Qurashi.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -23,11 +23,11 @@
 
 
 #import <Foundation/Foundation.h>
-#import "IQWebServiceConstants.h"
+#import "IQHTTPConstants.h"
 
 @class IQURLConnection;
 
-@interface IQWebService : NSObject
+@interface IQHTTPService : NSObject
 
 @property(nonatomic, assign, getter = isLogEnabled) BOOL logEnabled;
 @property(nonatomic, assign) IQRequestParameterType parameterType;

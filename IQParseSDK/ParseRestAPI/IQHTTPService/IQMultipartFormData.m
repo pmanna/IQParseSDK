@@ -1,6 +1,6 @@
 //
-//  IQ_Parse.m
-// https://github.com/hackiftekhar/IQParseSDK
+//  IQMultipartFormData.m
+// https://github.com/hackiftekhar/IQHTTPService
 // Copyright (c) 2013-14 Iftekhar Qurashi.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -21,34 +21,21 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#import "IQ_Parse.h"
-#import "IQPFHTTPService.h"
+#import "IQMultipartFormData.h"
 
-@implementation IQ_Parse
+@implementation IQMultipartFormData
 
-static NSString *PARSE_APPLICATION_ID;
-static NSString *PARSE_REST_API_KEY;
-
-+ (void)setApplicationId:(NSString *)applicationId restAPIKey:(NSString *)restAPIKey;
++(instancetype)multipartDataWithName:(NSString*)name fileName:(NSString*)fileName data:(NSData*)data mimeType:(NSString*)mimeType
 {
-    PARSE_APPLICATION_ID = applicationId;
-    PARSE_REST_API_KEY = restAPIKey;
-    
-    [[IQPFHTTPService service] addDefaultHeaderValue:[IQ_Parse getApplicationId] forHeaderField:kParse_X_Parse_Application_Id];
-    [[IQPFHTTPService service] addDefaultHeaderValue:[IQ_Parse getRestAPIKey] forHeaderField:kParse_X_Parse_REST_API_Key];
-}
+    IQMultipartFormData *multipartData = [[self alloc] init];
+    multipartData.name = name;
+    multipartData.fileName = fileName;
+    multipartData.data = data;
+    multipartData.mimeType = mimeType;
 
-+ (NSString *)getApplicationId
-{
-    return PARSE_APPLICATION_ID;
+    return multipartData;
 }
-
-+ (NSString *)getRestAPIKey;
-{
-    return PARSE_REST_API_KEY;
-}
-
-//+ (void)offlineMessagesEnabled:(BOOL)enabled;
-//+ (void)errorMessagesEnabled:(BOOL)enabled;
 
 @end
+
+

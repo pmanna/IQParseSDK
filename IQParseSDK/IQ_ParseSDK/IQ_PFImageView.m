@@ -7,7 +7,7 @@
 //
 
 #import "IQ_PFImageView.h"
-#import "IQPFWebService.h"
+#import "IQPFHTTPService.h"
 
 @interface IQ_PFImageView ()
 

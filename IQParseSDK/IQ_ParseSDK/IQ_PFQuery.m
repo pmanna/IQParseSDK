@@ -22,7 +22,7 @@
 // THE SOFTWARE.
 
 #import "IQ_PFQuery.h"
-#import "IQPFWebService.h"
+#import "IQPFHTTPService.h"
 #import "IQ_PFObject.h"
 #import "IQURLConnection.h"
 #import "IQ_Base64.h"
@@ -292,7 +292,7 @@
 
 + (IQ_PFObject *)getObjectOfClass:(NSString *)objectClass objectId:(NSString *)objectId error:(NSError **)error
 {
-    NSDictionary *result = [[IQPFWebService service] objectsWithParseClass:objectClass urlParameter:nil objectId:objectId error:error];
+    NSDictionary *result = [[IQPFHTTPService service] objectsWithParseClass:objectClass urlParameter:nil objectId:objectId error:error];
     
     IQ_PFObject *object;
     
@@ -316,7 +316,7 @@
 
 - (void)getObjectInBackgroundWithId:(NSString *)objectId block:(IQ_PFObjectResultBlock)block
 {
-    __block IQURLConnection *connection = [[IQPFWebService service] objectsWithParseClass:self.parseClassName urlParameter:nil objectId:objectId completionHandler:^(NSDictionary *result, NSError *error) {
+    __block IQURLConnection *connection = [[IQPFHTTPService service] objectsWithParseClass:self.parseClassName urlParameter:nil objectId:objectId completionHandler:^(NSDictionary *result, NSError *error) {
 
         if (connection) [connectionSet removeObject:connection];
 
@@ -359,7 +359,7 @@
 
 - (NSArray *)findObjects:(NSError **)error
 {
-    NSDictionary *result = [[IQPFWebService service] queryWithParseClass:self.parseClassName query:[self generateParseQuery] error:error];
+    NSDictionary *result = [[IQPFHTTPService service] queryWithParseClass:self.parseClassName query:[self generateParseQuery] error:error];
     
     if ([result objectForKey:kParseResultsKey])
     {
@@ -373,7 +373,7 @@
 
 - (void)findObjectsInBackgroundWithBlock:(IQ_PFArrayResultBlock)block
 {
-    __block IQURLConnection *connection = [[IQPFWebService service] queryWithParseClass:self.parseClassName query:[self generateParseQuery] completionHandler:^(NSDictionary *result, NSError *error) {
+    __block IQURLConnection *connection = [[IQPFHTTPService service] queryWithParseClass:self.parseClassName query:[self generateParseQuery] completionHandler:^(NSDictionary *result, NSError *error) {
 
         if (connection) [connectionSet removeObject:connection];
 
@@ -416,7 +416,7 @@
 {
     NSDictionary *queryDict = @{kParseWhereKey: [self deserializedQuery],kParseSkipKey:@(self.skip),kParseLimitKey:@1};
 
-    NSDictionary *result = [[IQPFWebService service] queryWithParseClass:self.parseClassName query:queryDict error:error];
+    NSDictionary *result = [[IQPFHTTPService service] queryWithParseClass:self.parseClassName query:queryDict error:error];
     
     IQ_PFObject *object;
 
@@ -433,7 +433,7 @@
 {
     NSDictionary *queryDict = @{kParseWhereKey: [self deserializedQuery],kParseSkipKey:@(self.skip),kParseLimitKey:@1};
 
-    __block IQURLConnection *connection = [[IQPFWebService service] queryWithParseClass:self.parseClassName query:queryDict completionHandler:^(NSDictionary *result, NSError *error) {
+    __block IQURLConnection *connection = [[IQPFHTTPService service] queryWithParseClass:self.parseClassName query:queryDict completionHandler:^(NSDictionary *result, NSError *error) {
         
         if (connection) [connectionSet removeObject:connection];
 
@@ -477,7 +477,7 @@
 {
     NSDictionary *queryDict = @{kParseWhereKey: [self deserializedQuery],kParseCountKey:@(YES),kParseSkipKey:@(self.skip),kParseLimitKey:@0};
 
-    NSDictionary *result = [[IQPFWebService service] queryWithParseClass:self.parseClassName query:queryDict error:error];
+    NSDictionary *result = [[IQPFHTTPService service] queryWithParseClass:self.parseClassName query:queryDict error:error];
 
     return [[result objectForKey:kParseCountKey] intValue];
 }
@@ -486,7 +486,7 @@
 {
     NSDictionary *queryDict = @{kParseWhereKey: [self deserializedQuery],kParseCountKey:@(YES),kParseSkipKey:@(self.skip),kParseLimitKey:@0};
 
-    __block IQURLConnection *connection = [[IQPFWebService service] queryWithParseClass:self.parseClassName query:queryDict completionHandler:^(NSDictionary *result, NSError *error) {
+    __block IQURLConnection *connection = [[IQPFHTTPService service] queryWithParseClass:self.parseClassName query:queryDict completionHandler:^(NSDictionary *result, NSError *error) {
         
         if (connection) [connectionSet removeObject:connection];
 

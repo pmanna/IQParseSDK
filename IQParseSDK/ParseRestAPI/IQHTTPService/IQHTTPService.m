@@ -1,6 +1,6 @@
 //
-//  IQWebService.m
-// https://github.com/hackiftekhar/IQWebService
+//  IQHTTPService.m
+// https://github.com/hackiftekhar/IQHTTPService
 // Copyright (c) 2013-14 Iftekhar Qurashi.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -22,12 +22,11 @@
 // THE SOFTWARE.
 
 
-#import "IQWebService.h"
+#import "IQHTTPService.h"
 #import "IQURLConnection.h"
-#import <MobileCoreServices/MobileCoreServices.h>
 #import "IQMultipartFormData.h"
 
-@implementation IQWebService
+@implementation IQHTTPService
 {
     NSMutableDictionary *defaultHeaders;
 }
@@ -46,7 +45,7 @@
 
 +(instancetype)service
 {
-    static IQWebService *sharedService;
+    static IQHTTPService *sharedService;
     if (sharedService == nil)
     {
         sharedService = [[self alloc] init];
@@ -195,7 +194,7 @@
 
 -(IQURLConnection*)requestWithURL:(NSURL*)url httpMethod:(NSString*)method contentType:(NSString*)contentType httpBody:(NSData*)httpBody dataCompletionHandler:(IQDataCompletionBlock)completionHandler
 {
-    NSMutableURLRequest *request = [IQWebService requestWithURL:url httpMethod:method contentType:contentType body:httpBody];
+    NSMutableURLRequest *request = [IQHTTPService requestWithURL:url httpMethod:method contentType:contentType body:httpBody];
     
     //Adding headers
     {
@@ -403,7 +402,7 @@
 
 -(NSData*)synchronousRequestWithURL:(NSURL*)url httpMethod:(NSString*)method contentType:(NSString*)contentType httpBody:(NSData*)httpBody error:(NSError**)error
 {
-    NSMutableURLRequest *request = [IQWebService requestWithURL:url httpMethod:method contentType:contentType body:httpBody];
+    NSMutableURLRequest *request = [IQHTTPService requestWithURL:url httpMethod:method contentType:contentType body:httpBody];
     
     //Adding headers
     {

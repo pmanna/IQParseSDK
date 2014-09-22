@@ -1,5 +1,5 @@
 //
-//  IQPFWebServiceConstants.m
+//  IQPFHTTPServiceConstants.m
 // https://github.com/hackiftekhar/IQParseSDK
 // Copyright (c) 2013-14 Iftekhar Qurashi.
 //
@@ -22,7 +22,7 @@
 // THE SOFTWARE.
 
 
-#import "IQPFWebServiceConstants.h"
+#import "IQPFHTTPServiceConstants.h"
 
 NSString *const kParse_X_Parse_Application_Id   =   @"X-Parse-Application-Id";
 NSString *const kParse_X_Parse_REST_API_Key     =   @"X-Parse-REST-API-Key";

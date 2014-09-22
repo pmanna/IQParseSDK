@@ -22,11 +22,10 @@
 // THE SOFTWARE.
 
 
-#import "IQPFWebService.h"
-#import "IQ_Parse.h"
+#import "IQPFHTTPService.h"
 #import "IQURLConnection.h"
 
-@implementation IQPFWebService
+@implementation IQPFHTTPService
 
 - (instancetype)init
 {
@@ -35,7 +34,7 @@
         [self setLogEnabled:YES];
         [self setParameterType:IQRequestParameterTypeApplicationJSON];
         [self setServerURL:@"https://api.parse.com/1/"];
-
+        
         [self setDefaultContentType:kIQContentTypeApplicationJson];
     }
     return self;
@@ -96,7 +95,7 @@
 -(NSDictionary*)updateObjectWithParseClass:(NSString*)parseClassName objectId:(NSString*)objectId attributes:(NSDictionary*)attributes error:(NSError**)error
 {
     NSString *path = [NSString stringWithFormat:@"classes/%@/%@",parseClassName,objectId];
-
+    
     return [self synchronousRequestWithPath:path httpMethod:kIQHTTPMethodPUT parameter:attributes error:error];
 }
 
@@ -215,7 +214,7 @@
 -(IQURLConnection*)updateUser:(NSDictionary*)userInfo objectId:(NSString*)objectId completionHandler:(IQDictionaryCompletionBlock)completion
 {
     NSString *path = [NSString stringWithFormat:@"users/%@",objectId];
-
+    
     return [self requestWithPath:path httpMethod:kIQHTTPMethodPUT parameter:userInfo completionHandler:completion];
 }
 
@@ -247,7 +246,7 @@
 -(IQURLConnection*)callFunction:(NSString*)function withParameters:(NSDictionary *)parameters completionHandler:(IQDataCompletionBlock)completion
 {
     NSString *path = [NSString stringWithFormat:@"functions/%@",function];
-
+    
     return [self requestWithPath:path httpMethod:kIQHTTPMethodPOST parameter:parameters dataCompletionHandler:completion];
 }
 
@@ -264,7 +263,7 @@
 -(IQURLConnection*)saveFileData:(NSData*)data fileName:(NSString*)fileName contentType:(NSString*)contentType uploadProgressBlock:(IQProgressBlock)uploadProgress completionHandler:(IQDictionaryCompletionBlock)completion
 {
     NSString *path = [NSString stringWithFormat:@"files/%@",fileName];
-
+    
     IQURLConnection *connection = [self requestWithPath:path httpMethod:kIQHTTPMethodPOST contentType:contentType httpBody:data completionHandler:completion];
     connection.uploadProgressBlock = uploadProgress;
     

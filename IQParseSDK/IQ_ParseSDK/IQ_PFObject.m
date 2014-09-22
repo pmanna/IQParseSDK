@@ -22,7 +22,7 @@
 // THE SOFTWARE.
 
 #import "IQ_PFObject.h"
-#import "IQPFWebService.h"
+#import "IQPFHTTPService.h"
 #import "IQ_PFFile.h"
 #import "IQ_PFRelation.h"
 
@@ -462,11 +462,11 @@
     
     if (self.objectId)
     {
-        result = [[IQPFWebService service] updateObjectWithParseClass:self.parseClassName objectId:self.objectId attributes:[self deserializedAttributes] error:error];
+        result = [[IQPFHTTPService service] updateObjectWithParseClass:self.parseClassName objectId:self.objectId attributes:[self deserializedAttributes] error:error];
     }
     else
     {
-        result = [[IQPFWebService service] createObjectWithParseClass:self.parseClassName attributes:[self deserializedAttributes] error:error];
+        result = [[IQPFHTTPService service] createObjectWithParseClass:self.parseClassName attributes:[self deserializedAttributes] error:error];
     }
     
     
@@ -490,7 +490,7 @@
 {
     if (self.objectId)
     {
-        __block IQURLConnection *connection = [[IQPFWebService service] updateObjectWithParseClass:self.parseClassName objectId:self.objectId attributes:[self deserializedAttributes] completionHandler:^(NSDictionary *result, NSError *error) {
+        __block IQURLConnection *connection = [[IQPFHTTPService service] updateObjectWithParseClass:self.parseClassName objectId:self.objectId attributes:[self deserializedAttributes] completionHandler:^(NSDictionary *result, NSError *error) {
             
             if (connection) [connectionSet removeObject:connection];
 
@@ -509,7 +509,7 @@
     }
     else
     {
-        __block IQURLConnection *connection = [[IQPFWebService service] createObjectWithParseClass:self.parseClassName attributes:[self deserializedAttributes] completionHandler:^(NSDictionary *result, NSError *error) {
+        __block IQURLConnection *connection = [[IQPFHTTPService service] createObjectWithParseClass:self.parseClassName attributes:[self deserializedAttributes] completionHandler:^(NSDictionary *result, NSError *error) {
 
             if (connection) [connectionSet removeObject:connection];
 
@@ -566,7 +566,7 @@
 
 - (void)refresh:(NSError **)error
 {
-    NSDictionary *result = [[IQPFWebService service] objectsWithParseClass:self.parseClassName urlParameter:nil objectId:self.objectId error:error];
+    NSDictionary *result = [[IQPFHTTPService service] objectsWithParseClass:self.parseClassName urlParameter:nil objectId:self.objectId error:error];
 
     if (result)
     {
@@ -576,7 +576,7 @@
 
 - (void)refreshInBackgroundWithBlock:(IQ_PFObjectResultBlock)block
 {
-    __block IQURLConnection *connection = [[IQPFWebService service] objectsWithParseClass:self.parseClassName urlParameter:nil objectId:self.objectId completionHandler:^(NSDictionary *result, NSError *error) {
+    __block IQURLConnection *connection = [[IQPFHTTPService service] objectsWithParseClass:self.parseClassName urlParameter:nil objectId:self.objectId completionHandler:^(NSDictionary *result, NSError *error) {
 
         if (connection) [connectionSet removeObject:connection];
 
@@ -632,7 +632,7 @@
 
 - (BOOL)delete:(NSError **)error
 {
-    NSDictionary *result = [[IQPFWebService service] deleteObjectWithParseClass:self.parseClassName objectId:self.objectId error:error];
+    NSDictionary *result = [[IQPFHTTPService service] deleteObjectWithParseClass:self.parseClassName objectId:self.objectId error:error];
     
     if (result)
     {
@@ -655,7 +655,7 @@
 
 - (void)deleteInBackgroundWithBlock:(IQ_PFBooleanResultBlock)block
 {
-    __block IQURLConnection *connection = [[IQPFWebService service] deleteObjectWithParseClass:self.parseClassName objectId:self.objectId completionHandler:^(NSDictionary *result, NSError *error) {
+    __block IQURLConnection *connection = [[IQPFHTTPService service] deleteObjectWithParseClass:self.parseClassName objectId:self.objectId completionHandler:^(NSDictionary *result, NSError *error) {
 
         if (connection) [connectionSet removeObject:connection];
 

@@ -22,7 +22,7 @@
 // THE SOFTWARE.
 
 #import "IQ_PFGeoPoint.h"
-#import "IQPFWebServiceConstants.h"
+#import "IQPFHTTPServiceConstants.h"
 
 @implementation IQ_PFGeoPoint
 

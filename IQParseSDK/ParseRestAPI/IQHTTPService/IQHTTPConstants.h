@@ -1,6 +1,6 @@
 //
-//  IQWebServiceConstants.h
-// https://github.com/hackiftekhar/IQWebService
+//  IQHTTPConstants.h
+// https://github.com/hackiftekhar/IQHTTPService
 // Copyright (c) 2013-14 Iftekhar Qurashi.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -30,7 +30,7 @@ typedef void (^IQDictionaryCompletionBlock)(NSDictionary * result, NSError *erro
 typedef void (^IQDataCompletionBlock)(NSData * result, NSError *error);
 typedef void (^IQResponseBlock)(NSHTTPURLResponse* response);
 typedef void (^IQProgressBlock)(CGFloat progress);
-typedef IQMultipartFormData*(^IQMultipartFormDataConstructionBlock)(NSInteger index, BOOL *stop);
+typedef IQMultipartFormData* (^IQMultipartFormDataConstructionBlock)(NSInteger index, BOOL *stop);
 
 
 typedef enum IQRequestParameterType
