@@ -23,8 +23,12 @@
 
 
 #import <Foundation/NSURLConnection.h>
-#import "IQWebServiceConstants.h"
 
+
+typedef void (^IQImageCompletionBlock)(UIImage *image, NSError *error);
+typedef void (^IQDataCompletionBlock)(NSData * result, NSError *error);
+typedef void (^IQResponseBlock)(NSHTTPURLResponse* response);
+typedef void (^IQProgressBlock)(CGFloat progress);
 
 @interface IQURLConnection : NSURLConnection
 
@@ -40,12 +44,16 @@
 
 
 //It automatically fires `start` method.
-+ (instancetype)sendAsynchronousRequest:(NSURLRequest *)request responseBlock:(IQResponseBlock)responseBlock uploadProgressBlock:(IQProgressBlock)uploadProgress downloadProgressBlock:(IQProgressBlock)downloadProgress completionHandler:(IQDataCompletionBlock)completion;
++ (instancetype)sendAsynchronousRequest:(NSMutableURLRequest *)request responseBlock:(IQResponseBlock)responseBlock uploadProgressBlock:(IQProgressBlock)uploadProgress downloadProgressBlock:(IQProgressBlock)downloadProgress completionHandler:(IQDataCompletionBlock)completion;
 
-- (instancetype)initWithRequest:(NSURLRequest *)request responseBlock:(IQResponseBlock*)responseBlock uploadProgressBlock:(IQProgressBlock*)uploadProgress downloadProgressBlock:(IQProgressBlock*)downloadProgress completionBlock:(IQDataCompletionBlock*)completion;
+- (instancetype)initWithRequest:(NSMutableURLRequest *)request resumeData:(NSData*)dataToResume responseBlock:(IQResponseBlock)responseBlock uploadProgressBlock:(IQProgressBlock)uploadProgress downloadProgressBlock:(IQProgressBlock)downloadProgress completionBlock:(IQDataCompletionBlock)completion;
 
-////Functions of IQURLConnection start and cancel
-//- (void)start;
-//- (void)cancel;
+- (void)start;
+- (void)cancel;
 
 @end
+
+
+extern NSUInteger const kIQUserCancelErrorCode;
+extern NSUInteger const kIQInvalidURLErrorCode;
+

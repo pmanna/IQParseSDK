@@ -27,8 +27,10 @@
 @interface IQURLConnection ()
 {
     IQDataCompletionBlock   _dataCompletionBlock;
-
+    
     NSMutableData *_data;
+    
+    CGFloat _expectedContentLength;
 }
 
 @end
@@ -46,25 +48,31 @@ static NSOperationQueue *queue;
     queue = [[NSOperationQueue alloc] init];
 }
 
-+ (IQURLConnection*)sendAsynchronousRequest:(NSURLRequest *)request responseBlock:(IQResponseBlock)responseBlock uploadProgressBlock:(IQProgressBlock)uploadProgress downloadProgressBlock:(IQProgressBlock)downloadProgress completionHandler:(IQDataCompletionBlock)completion
++ (IQURLConnection*)sendAsynchronousRequest:(NSMutableURLRequest *)request responseBlock:(IQResponseBlock)responseBlock uploadProgressBlock:(IQProgressBlock)uploadProgress downloadProgressBlock:(IQProgressBlock)downloadProgress completionHandler:(IQDataCompletionBlock)completion
 {
-    IQURLConnection *asyncRequest = [[IQURLConnection alloc] initWithRequest:request responseBlock:&responseBlock uploadProgressBlock:&uploadProgress downloadProgressBlock:&downloadProgress completionBlock:&completion];
+    IQURLConnection *asyncRequest = [[IQURLConnection alloc] initWithRequest:request resumeData:nil responseBlock:responseBlock uploadProgressBlock:uploadProgress downloadProgressBlock:downloadProgress completionBlock:completion];
     [asyncRequest start];
-
+    
     return asyncRequest;
 }
 
--(instancetype)initWithRequest:(NSURLRequest *)request responseBlock:(IQResponseBlock*)responseBlock uploadProgressBlock:(IQProgressBlock*)uploadProgress downloadProgressBlock:(IQProgressBlock*)downloadProgress completionBlock:(IQDataCompletionBlock*)completion
+- (instancetype)initWithRequest:(NSMutableURLRequest *)request resumeData:(NSData*)dataToResume responseBlock:(IQResponseBlock)responseBlock uploadProgressBlock:(IQProgressBlock)uploadProgress downloadProgressBlock:(IQProgressBlock)downloadProgress completionBlock:(IQDataCompletionBlock)completion
 {
+    if ([dataToResume length])
+    {
+        [request addValue:[NSString stringWithFormat: @"bytes=%d-",[dataToResume length]] forHTTPHeaderField:@"Range"];
+    }
+    
     if (self = [super initWithRequest:request delegate:self startImmediately:NO])
     {
         [self setDelegateQueue:queue];
-        _uploadProgressBlock = *uploadProgress;
-        _downloadProgressBlock = *downloadProgress;
-        _dataCompletionBlock = *completion;
-        _responseBlock = *responseBlock;
+        _uploadProgressBlock = uploadProgress;
+        _downloadProgressBlock = downloadProgress;
+        _dataCompletionBlock = completion;
+        _responseBlock = responseBlock;
         
-        _data = [[NSMutableData alloc] init];
+        _data = [[NSMutableData alloc] initWithData:dataToResume];
+        _expectedContentLength = NSURLResponseUnknownLength;
     }
     return self;
 }
@@ -76,7 +84,7 @@ static NSOperationQueue *queue;
 
 -(void)sendDownloadProgress:(CGFloat)progress
 {
-    if (_downloadProgressBlock && _response.expectedContentLength!=NSURLResponseUnknownLength)
+    if (_downloadProgressBlock && _expectedContentLength!=NSURLResponseUnknownLength)
     {
         if ([NSThread isMainThread])
         {
@@ -148,6 +156,30 @@ static NSOperationQueue *queue;
 - (void)connection:(NSURLConnection *)connection didReceiveResponse:(NSHTTPURLResponse *)response
 {
     _response = response;
+    
+    _expectedContentLength = NSURLResponseUnknownLength;
+	NSDictionary *headers = [response allHeaderFields];
+	if (headers)
+    {
+		if (headers[@"Content-Range"])
+        {
+			NSString *contentRange = headers[@"Content-Range"];
+			NSRange range = [contentRange rangeOfString: @"/"];
+			NSString *totalBytesCount = [contentRange substringFromIndex: range.location + 1];
+			_expectedContentLength = [totalBytesCount floatValue];
+		}
+        else if (headers[@"Content-Length"])
+        {
+            _data = [[NSMutableData alloc] init];
+			_expectedContentLength = [headers[@"Content-Length"] floatValue];
+		}
+        else
+        {
+            _data = [[NSMutableData alloc] init];
+            _expectedContentLength = NSURLResponseUnknownLength;
+        }
+	}
+    
     [self sendResponse:_response];
 }
 
@@ -155,22 +187,29 @@ static NSOperationQueue *queue;
 {
     [_data appendData:data];
     
-    [self sendDownloadProgress:((CGFloat)_data.length/(CGFloat)_response.expectedContentLength)];
+    [self sendDownloadProgress:((CGFloat)_data.length/_expectedContentLength)];
 }
 
 - (void)connection:(NSURLConnection *)connection didFailWithError:(NSError *)error
 {
     _error = error;
-
+    
     [self sendCompletionData:_data error:error];
+}
+
+-(void)start
+{
+    [super start];
 }
 
 -(void)cancel
 {
     [super cancel];
     
-//    [self sendCompletionData:nil error:[NSError errorWithDomain:@"UserCancelDomain" code:100 userInfo:nil]];
-
+    _error = [NSError errorWithDomain:NSStringFromClass([self class]) code:kIQUserCancelErrorCode userInfo:nil];
+    
+    [self sendCompletionData:_data error:_error];
+    
     _responseBlock = NULL;
     _uploadProgressBlock = NULL;
     _downloadProgressBlock = NULL;
@@ -182,16 +221,6 @@ static NSOperationQueue *queue;
     [self sendCompletionData:_data error:nil];
 }
 
-- (void)connectionDidResumeDownloading:(NSURLConnection *)connection totalBytesWritten:(long long)totalBytesWritten expectedTotalBytes:(long long) expectedTotalBytes
-{
-    NSLog(@"Resuming");
-}
-
-- (void)connection:(NSURLConnection *)connection didWriteData:(long long)bytesWritten totalBytesWritten:(long long)totalBytesWritten expectedTotalBytes:(long long) expectedTotalBytes
-{
-    [self sendDownloadProgress:((CGFloat)_data.length/(CGFloat)_response.expectedContentLength)];
-}
-
 - (void)connection:(NSURLConnection *)connection didSendBodyData:(NSInteger)bytesWritten totalBytesWritten:(NSInteger)totalBytesWritten totalBytesExpectedToWrite:(NSInteger)totalBytesExpectedToWrite
 {
     [self sendUploadProgress:((CGFloat)totalBytesWritten/(CGFloat)totalBytesExpectedToWrite)];
@@ -201,65 +230,13 @@ static NSOperationQueue *queue;
 - (void)connection:(NSURLConnection *)connection willSendRequestForAuthenticationChallenge:(NSURLAuthenticationChallenge *)challenge
 {
     NSURLProtectionSpace *protectionSpace = [challenge protectionSpace];
-
+    
     id<NSURLAuthenticationChallengeSender> sender = [challenge sender];
-
+    
     if ([[protectionSpace authenticationMethod] isEqualToString:NSURLAuthenticationMethodServerTrust])
     {
         [sender useCredential:[NSURLCredential credentialForTrust:challenge.protectionSpace.serverTrust] forAuthenticationChallenge:challenge];
     }
-//    else if ([[challenge protectionSpace] authenticationMethod] == NSURLAuthenticationMethodClientCertificate)
-//    {
-//        //this handles authenticating the client certificate
-//        
-//        /*
-//         What we need to do here is get the certificate and an an identity so we can do this:
-//         NSURLCredential *credential = [NSURLCredential credentialWithIdentity:identity certificates:myCerts persistence:NSURLCredentialPersistencePermanent];
-//         [[challenge sender] useCredential:credential forAuthenticationChallenge:challenge];
-//         
-//         It's easy to load the certificate using the code in -installCertificate
-//         It's more difficult to get the identity.
-//         We can get it from a .p12 file, but you need a passphrase:
-//         */
-//        
-//        NSString *kP12FileName = @"certificate";
-//        
-//        NSString *p12Path = [[NSBundle mainBundle] pathForResource:kP12FileName ofType:@"p12"];
-//        NSData *p12Data = [[NSData alloc] initWithContentsOfFile:p12Path];
-//        
-//        CFStringRef password = CFSTR("PASSWORD");
-//        const void *keys[] = { kSecImportExportPassphrase };
-//        const void *values[] = { password };
-//        CFDictionaryRef optionsDictionary = CFDictionaryCreate(NULL, keys, values, 1, NULL, NULL);
-//        CFArrayRef p12Items;
-//        
-//        OSStatus result = SecPKCS12Import((__bridge CFDataRef)p12Data, optionsDictionary, &p12Items);
-//        
-//        if(result == noErr)
-//        {
-//            CFDictionaryRef identityDict = CFArrayGetValueAtIndex(p12Items, 0);
-//            SecIdentityRef identityApp =(SecIdentityRef)CFDictionaryGetValue(identityDict,kSecImportItemIdentity);
-//            
-//            SecCertificateRef certRef;
-//            SecIdentityCopyCertificate(identityApp, &certRef);
-//            
-//            SecCertificateRef certArray[1] = { certRef };
-//            CFArrayRef myCerts = CFArrayCreate(NULL, (void *)certArray, 1, NULL);
-//            CFRelease(certRef);
-//            
-//            NSURLCredential *credential = [NSURLCredential credentialWithIdentity:identityApp certificates:(__bridge NSArray *)myCerts persistence:NSURLCredentialPersistencePermanent];
-//            CFRelease(myCerts);
-//            
-//            [[challenge sender] useCredential:credential forAuthenticationChallenge:challenge];
-//        }
-//    }
-//    else if ([[challenge protectionSpace] authenticationMethod] == NSURLAuthenticationMethodDefault ||
-//             [[challenge protectionSpace] authenticationMethod] == NSURLAuthenticationMethodNTLM)
-//    {
-        // For normal authentication based on username and password. This could be NTLM or Default.
-//        NSURLCredential *credential = [NSURLCredential credentialWithUser:@"username" password:@"password" persistence:NSURLCredentialPersistenceForSession];
-//        [[challenge sender] useCredential:credential forAuthenticationChallenge:challenge];
-//    }
     else
     {
         [sender performDefaultHandlingForAuthenticationChallenge:challenge];
@@ -267,3 +244,7 @@ static NSOperationQueue *queue;
 }
 
 @end
+
+
+NSUInteger const kIQUserCancelErrorCode     =   4;
+NSUInteger const kIQInvalidURLErrorCode     =   5;

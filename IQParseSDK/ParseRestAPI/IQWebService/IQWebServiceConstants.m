@@ -23,8 +23,11 @@
 
 
 #import <Foundation/NSObjCRuntime.h>
+#import <MobileCoreServices/MobileCoreServices.h>
+#import "IQURLConnection.h"
+#import "IQWebServiceConstants.h"
 
-@class NSString;
+@class NSString, NSData;
 
 #pragma mark - HTTP Header field constant strings
 NSString *const kIQAccept                                   =   @"Accept";
@@ -115,3 +118,119 @@ NSString *const kIQHTTPMethodPUT                            =   @"PUT";
 NSString *const kIQHTTPMethodDELETE                         =   @"DELETE";
 
 
+
+void printHTTPRequest(NSURLRequest *request)
+{
+    if (request.URL == NULL)    NSLog(@"RequestURL is NULL");
+    else                        NSLog(@"RequestURL:- %@",request.URL);
+    
+    NSLog(@"HTTP Method:- %@",request.HTTPMethod);
+    
+    if (request.allHTTPHeaderFields)
+    {
+        NSLog(@"HTTPHeaderFields:- %@",request.allHTTPHeaderFields);
+    }
+    
+    if (request.HTTPBody)
+    {
+        NSString *requestString = [[NSString alloc] initWithData:request.HTTPBody encoding:NSUTF8StringEncoding];
+        
+        if (requestString)
+        {
+            NSLog(@"Request Body:- %@\n\n",requestString);
+        }
+        else
+        {
+            NSLog(@"Request Body Length:- %lu\n\n",(unsigned long)[request.HTTPBody length]);
+        }
+    }
+}
+
+void printURLConnection(IQURLConnection *connection)
+{
+    NSLog(@"URL:- %@",connection.originalRequest.URL);
+    NSLog(@"HTTP Method:- %@",connection.originalRequest.HTTPMethod);
+    
+    if (connection.error)
+    {
+        NSLog(@"error:- %@\n\n",connection.error);
+    }
+    
+    if (connection.response)
+    {
+        NSLog(@"Response Header:- %@\n\n",connection.response.allHeaderFields);
+    }
+    
+    if (connection.responseData)
+    {
+        NSString *responseString = [[NSString alloc] initWithData:connection.responseData encoding:NSUTF8StringEncoding];
+        
+        if ([responseString length])
+        {
+            NSLog(@"Response:- %@\n\n",responseString);
+        }
+        else
+        {
+            NSLog(@"Response Data Length:- %lu\n\n",(unsigned long)[connection.responseData length]);
+        }
+    }
+}
+
+
+NSString* httpURLEncodedString(NSDictionary *parameter)
+{
+    NSMutableArray *values = [[NSMutableArray alloc] init];
+    
+    for (NSString *aKey in [parameter allKeys])
+    {
+        [values addObject:[NSString stringWithFormat:@"%@=%@",aKey,[parameter objectForKey:aKey]]];
+    }
+    
+    return [values componentsJoinedByString:@"&"];
+}
+
+NSData* httpURLEncodedData(NSDictionary *parameter)
+{
+    return [httpURLEncodedString(parameter) dataUsingEncoding:NSUTF8StringEncoding];
+}
+
+NSString* jsonEncodedString(NSDictionary *parameter)
+{
+    return [[NSString alloc] initWithData:jsonEncodedData(parameter) encoding:NSUTF8StringEncoding];
+}
+
+NSData* jsonEncodedData(NSDictionary *parameter)
+{
+    return [NSJSONSerialization dataWithJSONObject:parameter options:0 error:nil];
+}
+
+NSString* MIMETypeForFileAtPath(NSString * filePath)
+{
+    CFStringRef UTI = UTTypeCreatePreferredIdentifierForTag(kUTTagClassFilenameExtension, (__bridge CFStringRef)[filePath pathExtension], NULL);
+    CFStringRef MIMEType = UTTypeCopyPreferredTagWithClass (UTI, kUTTagClassMIMEType);
+    CFRelease(UTI);
+    return (__bridge NSString *)MIMEType;
+}
+
+
+// generate boundary string
+// adapted from http://developer.apple.com/library/ios/#samplecode/SimpleURLConnections
+NSString *generateRandomBoundaryString(void)
+{
+    CFUUIDRef       uuid;
+    CFStringRef     uuidStr;
+    NSString *      result;
+    
+    uuid = CFUUIDCreate(NULL);
+    assert(uuid != NULL);
+    
+    uuidStr = CFUUIDCreateString(NULL, uuid);
+    assert(uuidStr != NULL);
+    
+    result = [NSString stringWithFormat:@"Boundary-%@", uuidStr];
+    
+    CFRelease(uuidStr);
+    CFRelease(uuid);
+    
+    return result;
+}

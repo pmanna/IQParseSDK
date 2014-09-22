@@ -22,7 +22,7 @@
 // THE SOFTWARE.
 
 
-@class UIImage, NSHTTPURLResponse, NSError, NSString, NSData;
+@class UIImage, NSHTTPURLResponse, NSError, NSString, NSData, IQMultipartFormData, IQURLConnection;
 
 #pragma mark - Completion blocks
 /*! @abstract Downloadeded NSData will return through IQDataCompletionBlock */
@@ -30,6 +30,8 @@ typedef void (^IQDictionaryCompletionBlock)(NSDictionary * result, NSError *erro
 typedef void (^IQDataCompletionBlock)(NSData * result, NSError *error);
 typedef void (^IQResponseBlock)(NSHTTPURLResponse* response);
 typedef void (^IQProgressBlock)(CGFloat progress);
+typedef IQMultipartFormData*(^IQMultipartFormDataConstructionBlock)(NSInteger index, BOOL *stop);
+
 
 typedef enum IQRequestParameterType
 {
@@ -196,3 +198,17 @@ extern NSString *const kIQContentTypeVideoXFlv;
 //For Charset
 /*! @abstract @"charset=utf-8"  */
 extern NSString *const kIQContentTypeCharsetUtf8;
+
+
+extern void printHTTPRequest(NSURLRequest *request);
+extern void printURLConnection(IQURLConnection *connection);
+
+extern NSString*    httpURLEncodedString(NSDictionary *parameter);
+extern NSData*      httpURLEncodedData(NSDictionary *parameter);
+extern NSString*    jsonEncodedString(NSDictionary *parameter);
+extern NSData*      jsonEncodedData(NSDictionary *parameter);
+
+extern NSString* MIMETypeForFileAtPath(NSString * filePath);
+
+extern NSString *generateRandomBoundaryString(void);
+

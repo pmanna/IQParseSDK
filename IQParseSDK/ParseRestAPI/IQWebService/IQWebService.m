@@ -25,6 +25,7 @@
 #import "IQWebService.h"
 #import "IQURLConnection.h"
 #import <MobileCoreServices/MobileCoreServices.h>
+#import "IQMultipartFormData.h"
 
 @implementation IQWebService
 {
@@ -50,7 +51,7 @@
     {
         sharedService = [[self alloc] init];
     }
-
+    
     return sharedService;
 }
 
@@ -81,20 +82,46 @@
     [defaultHeaders removeObjectForKey:headerField];
 }
 
+-(void)setAuthorizationHeaderWithUsername:(NSString *)username password:(NSString *)password
+{
+    NSString *base64String = [NSString stringWithFormat:@"%@:%@", username, password];
+    
+	NSData *authData = [base64String dataUsingEncoding:NSUTF8StringEncoding];
+    
+    if ([authData respondsToSelector:@selector(base64EncodedStringWithOptions:)])
+    {
+        base64String = [authData base64EncodedStringWithOptions:NSDataBase64EncodingEndLineWithLineFeed];
+    }
+    else if ([authData respondsToSelector:@selector(base64Encoding)])
+    {
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+        base64String = [authData base64Encoding];
+#pragma clang diagnostic pop
+    }
+    
+    [self addDefaultHeaderValue:[NSString stringWithFormat:@"Basic %@", base64String] forHeaderField:kIQAuthorization];
+}
+
+-(void)setAuthorizationHeaderWithToken:(NSString *)token;
+{
+    [self addDefaultHeaderValue:[NSString stringWithFormat:@"Token token=\"%@\"", token] forHeaderField:kIQAuthorization];
+}
+
 #pragma mark -
 #pragma mark - Asynchronous Requests
 
 -(IQURLConnection*)requestWithPath:(NSString*)path httpMethod:(NSString*)method parameter:(NSDictionary*)parameter completionHandler:(IQDictionaryCompletionBlock)completionHandler
 {
     return [self requestWithPath:path httpMethod:method parameter:parameter dataCompletionHandler:^(NSData *result, NSError *error) {
-
+        
         NSDictionary *dict = [NSJSONSerialization JSONObjectWithData:result options:0 error:nil];
         
         if (completionHandler)
         {
             completionHandler(dict,error);
         }
-
+        
     }];
 }
 
@@ -109,7 +136,7 @@
         if ([path hasSuffix:@"?"] == NO && [parameter count])
             [parameterString appendString:@"?"];
         
-        [parameterString appendString:[[self class] httpURLEncodedString:parameter]];
+        [parameterString appendString:httpURLEncodedString(parameter)];
         
         url = [NSURL URLWithString:[[NSString stringWithFormat:@"%@%@%@",self.serverURL,path,parameterString] stringByAddingPercentEscapesUsingEncoding:NSASCIIStringEncoding]];
     }
@@ -127,8 +154,7 @@
         {
             if (parameter)
             {
-                NSString *parameterString = [[self class] httpURLEncodedString:parameter];
-                originalData = [parameterString dataUsingEncoding:NSUTF8StringEncoding];
+                originalData = httpURLEncodedData(parameter);
             }
         }
         
@@ -151,9 +177,9 @@
 -(IQURLConnection*)requestWithPath:(NSString*)path httpMethod:(NSString*)method contentType:(NSString*)contentType httpBody:(NSData*)httpBody completionHandler:(IQDictionaryCompletionBlock)completionHandler
 {
     return [self requestWithPath:path httpMethod:method contentType:contentType httpBody:httpBody dataCompletionHandler:^(NSData *result, NSError *error) {
-
+        
         NSDictionary *dict = [NSJSONSerialization JSONObjectWithData:result options:0 error:nil];
-
+        
         if (completionHandler)
         {
             completionHandler(dict,error);
@@ -178,14 +204,14 @@
     
     if (_logEnabled)
 	{
-        [[self class] printHTTPRequest:request];
+        printHTTPRequest(request);
 	}
     
     __block IQURLConnection *connection = [IQURLConnection sendAsynchronousRequest:request responseBlock:NULL uploadProgressBlock:NULL downloadProgressBlock:NULL completionHandler:^(NSData *result, NSError *error) {
         
         if (_logEnabled)
         {
-            [[self class] printConnection:connection];
+            printURLConnection(connection);
         }
         
         if (completionHandler != NULL)
@@ -199,7 +225,7 @@
     return connection;
 }
 
--(IQURLConnection*)fileUploadRequestWithPath:(NSString*)path parameter:(NSDictionary*)parameter uploadFiles:(NSArray*)files mimeType:(NSString*)mimeType uploadProgressBlock:(IQProgressBlock)uploadProgress responseBlock:(IQDictionaryCompletionBlock)completionHandler
+-(IQURLConnection*)requestWithPath:(NSString*)path parameter:(NSDictionary*)parameter dataConstructionBlock:(IQMultipartFormDataConstructionBlock)dataConstructionBlock uploadProgressBlock:(IQProgressBlock)uploadProgress responseBlock:(IQDictionaryCompletionBlock)completionHandler
 {
     NSURL *url = [NSURL URLWithString:[[NSString stringWithFormat:@"%@%@",self.serverURL,path] stringByAddingPercentEscapesUsingEncoding:NSASCIIStringEncoding]];
     
@@ -211,7 +237,7 @@
         [request setAllHTTPHeaderFields:defaultHeaders];
     }
     
-    NSString *boundary = [[self class] generateBoundaryString];
+    NSString *boundary = generateRandomBoundaryString();
     
     //Set Content-Type
     {
@@ -223,29 +249,52 @@
     {
         NSMutableData *httpBody = [NSMutableData data];
         
+        __block NSMutableString *parameterAttributes = [[NSMutableString alloc] init];
+        
         //Append Key-Value
         [parameter enumerateKeysAndObjectsUsingBlock:^(NSString *parameterKey, NSString *parameterValue, BOOL *stop)
          {
-             [httpBody appendData:[[NSString stringWithFormat:@"--%@\r\n", boundary] dataUsingEncoding:NSUTF8StringEncoding]];
-             [httpBody appendData:[[NSString stringWithFormat:@"Content-Disposition: form-data; name=\"%@\"\r\n\r\n", parameterKey] dataUsingEncoding:NSUTF8StringEncoding]];
-             [httpBody appendData:[[NSString stringWithFormat:@"%@\r\n", parameterValue] dataUsingEncoding:NSUTF8StringEncoding]];
+             [parameterAttributes appendFormat:@"--%@\r\n", boundary];
+             [parameterAttributes appendFormat:@"Content-Disposition: form-data; name=\"%@\"\r\n\r\n", parameterKey];
+             [parameterAttributes appendFormat:@"%@\r\n", parameterValue];
          }];
         
-        // Append Data
-        for (NSData *file in files)
+        [httpBody appendData:[parameterAttributes dataUsingEncoding:NSUTF8StringEncoding]];
+        
+        if (dataConstructionBlock)
         {
-            NSString *fileName = nil;
+            BOOL *shouldStop = malloc(sizeof(BOOL));
+            *shouldStop = NO;
             
-            if      ([mimeType isEqualToString:(NSString*)kUTTypeJPEG])     fileName = @"selfie.jpg";
-            else if ([mimeType isEqualToString:(NSString*)kUTTypeVideo])    fileName = @"selfie.mov";
-            else    fileName = @"selfie";
+            //Index to notify on block
+            NSInteger index = 0;
             
-            [httpBody appendData:[[NSString stringWithFormat:@"--%@\r\n", boundary] dataUsingEncoding:NSUTF8StringEncoding]];
-            [httpBody appendData:[[NSString stringWithFormat:@"Content-Disposition: form-data; name=\"selfie\"; filename=\"%@\"\r\n",fileName] dataUsingEncoding:NSUTF8StringEncoding]];
-            
-            [httpBody appendData:[[NSString stringWithFormat:@"Content-Type: %@\r\n\r\n", kUTTypeJPEG] dataUsingEncoding:NSUTF8StringEncoding]];
-            [httpBody appendData:file];
-            [httpBody appendData:[@"\r\n" dataUsingEncoding:NSUTF8StringEncoding]];
+            while (*shouldStop == NO)
+            {
+                IQMultipartFormData *formData = dataConstructionBlock(index, shouldStop);
+                
+                if (formData == nil)
+                {
+                    *shouldStop = YES;
+                }
+                else
+                {
+                    index++;
+                    
+                    NSMutableString *attributes = [[NSMutableString alloc] initWithFormat:@"--%@\r\n", boundary];
+                    
+                    [attributes appendString:@"Content-Disposition: form-data"];
+                    
+                    if (formData.name)      [attributes appendFormat:@"; name=\"%@\"",formData.name];
+                    if (formData.fileName)  [attributes appendFormat:@"; filename=\"%@\"\r\n",formData.fileName];
+                    
+                    [attributes appendFormat:@"%@: %@\r\n\r\n", kIQContentType, formData.mimeType];
+                    
+                    [httpBody appendData:[attributes dataUsingEncoding:NSUTF8StringEncoding]];
+                    [httpBody appendData:formData.data];
+                    [httpBody appendData:[@"\r\n" dataUsingEncoding:NSUTF8StringEncoding]];
+                }
+            }
         }
         
         //Closing boundary
@@ -258,14 +307,14 @@
     
     if (_logEnabled)
 	{
-        [[self class] printHTTPRequest:request];
+        printHTTPRequest(request);
 	}
     
     __block IQURLConnection *connection = [IQURLConnection sendAsynchronousRequest:request responseBlock:NULL uploadProgressBlock:uploadProgress downloadProgressBlock:NULL completionHandler:^(NSData *result, NSError *error) {
         
         if (_logEnabled)
         {
-            [[self class] printConnection:connection];
+            printURLConnection(connection);
         }
         
         if (completionHandler != NULL)
@@ -303,7 +352,7 @@
         if ([path hasSuffix:@"?"] == NO && [parameter count])
             [parameterString appendString:@"?"];
         
-        [parameterString appendString:[[self class] httpURLEncodedString:parameter]];
+        [parameterString appendString:httpURLEncodedString(parameter)];
         
         url = [NSURL URLWithString:[[NSString stringWithFormat:@"%@%@%@",self.serverURL,path,parameterString] stringByAddingPercentEscapesUsingEncoding:NSASCIIStringEncoding]];
     }
@@ -321,8 +370,7 @@
         {
             if (parameter)
             {
-                NSString *parameterString = [[self class] httpURLEncodedString:parameter];
-                originalData = [parameterString dataUsingEncoding:NSUTF8StringEncoding];
+                originalData = httpURLEncodedData(parameter);
             }
         }
         
@@ -364,7 +412,7 @@
     
     if (_logEnabled)
 	{
-        [[self class] printHTTPRequest:request];
+        printHTTPRequest(request);
 	}
     
     return [IQURLConnection sendSynchronousRequest:request returningResponse:NULL error:error];
@@ -372,81 +420,6 @@
 
 #pragma mark -
 #pragma mark - Private Helper methods
-
-+(void)printHTTPRequest:(NSURLRequest*)request
-{
-    if (request.URL == NULL)    NSLog(@"RequestURL is NULL");
-    else                        NSLog(@"RequestURL:- %@",request.URL);
-    
-    NSLog(@"HTTP Method:- %@",request.HTTPMethod);
-    
-    if (request.allHTTPHeaderFields)
-    {
-        NSLog(@"HTTPHeaderFields:- %@",request.allHTTPHeaderFields);
-    }
-    
-    if (request.HTTPBody)
-    {
-        NSString *requestString = [[NSString alloc] initWithData:request.HTTPBody encoding:NSUTF8StringEncoding];
-        
-        if (requestString)
-        {
-            NSLog(@"Request Body:- %@\n\n",requestString);
-        }
-        else
-        {
-            NSLog(@"Request Body Length:- %d\n\n",[request.HTTPBody length]);
-        }
-    }
-}
-
-+(void)printConnection:(IQURLConnection*)connection
-{
-    NSLog(@"URL:- %@",connection.originalRequest.URL);
-    NSLog(@"HTTP Method:- %@",connection.originalRequest.HTTPMethod);
-    
-    if (connection.error)
-    {
-        NSLog(@"error:- %@\n\n",connection.error);
-    }
-    
-    if (connection.response)
-    {
-        NSLog(@"Response Header:- %@\n\n",connection.response.allHeaderFields);
-    }
-    
-    if (connection.responseData)
-    {
-        NSString *responseString = [[NSString alloc] initWithData:connection.responseData encoding:NSUTF8StringEncoding];
-        
-        if ([responseString length])
-        {
-            NSLog(@"Response:- %@\n\n",responseString);
-        }
-        else
-        {
-            NSLog(@"Response Data Length:- %d\n\n",[connection.responseData length]);
-        }
-    }
-}
-
-
-+(NSString*)httpURLEncodedString:(NSDictionary*)dictionary
-{
-    NSMutableString *parameterString = [[NSMutableString alloc] init];
-    
-    for (NSString *aKey in [dictionary allKeys])
-    {
-        [parameterString appendFormat:@"%@=%@&",aKey,[dictionary objectForKey:aKey]];
-    }
-    
-    if ([parameterString length])
-    {
-        [parameterString replaceCharactersInRange:NSMakeRange(parameterString.length-1, 1) withString:@""];
-    }
-    
-    return parameterString;
-}
 
 +(NSMutableURLRequest*)requestWithURL:(NSURL*)url httpMethod:(NSString*)httpMethod contentType:(NSString*)contentType body:(NSData*)body
 {
@@ -459,7 +432,7 @@
         if ([body length])
         {
             [request setHTTPBody:body];
-            [request addValue:[NSString stringWithFormat:@"%d",[body length]] forHTTPHeaderField:kIQContentLength];
+            [request addValue:[NSString stringWithFormat:@"%lu",(unsigned long)[body length]] forHTTPHeaderField:kIQContentLength];
         }
         return request;
     }
@@ -467,47 +440,6 @@
     {
         return nil;
     }
-}
-
-// generate boundary string
-// adapted from http://developer.apple.com/library/ios/#samplecode/SimpleURLConnections
-+ (NSString *)generateBoundaryString
-{
-    CFUUIDRef       uuid;
-    CFStringRef     uuidStr;
-    NSString *      result;
-    
-    uuid = CFUUIDCreate(NULL);
-    assert(uuid != NULL);
-    
-    uuidStr = CFUUIDCreateString(NULL, uuid);
-    assert(uuidStr != NULL);
-    
-    result = [NSString stringWithFormat:@"Boundary-%@", uuidStr];
-    
-    CFRelease(uuidStr);
-    CFRelease(uuid);
-    
-    return result;
-}
-
-+ (NSString *)contentTypeForImageData:(NSData *)data
-{
-    uint8_t c;
-    [data getBytes:&c length:1];
-    
-    switch (c) {
-        case 0xFF:
-            return @"image/jpeg";
-        case 0x89:
-            return @"image/png";
-        case 0x47:
-            return @"image/gif";
-        case 0x49:
-        case 0x4D:
-            return @"image/tiff";
-    }
-    return nil;
 }
 
 @end
