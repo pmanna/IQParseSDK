@@ -239,6 +239,75 @@
     return [self synchronousRequestWithPath:path httpMethod:kIQHTTPMethodDELETE parameter:nil error:error];
 }
 
+#pragma mark -
+#pragma mark - Installations
+
+-(IQURLConnection*)installationWithObjectId:(NSString*)objectId completionHandler:(IQDictionaryCompletionBlock)completion
+{
+    NSMutableString *path = [[NSMutableString alloc] initWithString: @"installations"];
+    
+    if (objectId)   [path appendFormat:@"/%@",objectId];
+    
+    return [self requestWithPath: path
+                      httpMethod: kIQHTTPMethodGET
+                       parameter: nil
+               completionHandler: completion];
+}
+
+
+-(NSDictionary*)installationWithObjectId:(NSString*)objectId error:(NSError**)error
+{
+    NSMutableString *path = [[NSMutableString alloc] initWithString: @"installations"];
+    
+    if (objectId)   [path appendFormat:@"/%@",objectId];
+    
+    return [self synchronousRequestWithPath: path
+                                 httpMethod: kIQHTTPMethodGET
+                                  parameter: nil
+                                      error: error];
+}
+
+-(IQURLConnection*)createInstallationWithAttributes:(NSDictionary*)attributes
+                                  completionHandler:(IQDictionaryCompletionBlock)completion
+{
+    return [self requestWithPath: @"installations"
+                      httpMethod: kIQHTTPMethodPOST
+                       parameter: attributes
+               completionHandler: completion];
+}
+
+-(NSDictionary*)createInstallationWithAttributes:(NSDictionary*)attributes
+                                           error:(NSError**)error
+{
+    return [self synchronousRequestWithPath: @"installations"
+                                 httpMethod: kIQHTTPMethodPOST
+                                  parameter: attributes
+                                      error: error];
+}
+
+-(IQURLConnection*)updateInstallationWithObjectId:(NSString*)objectId
+                                       attributes:(NSDictionary*)attributes
+                                completionHandler:(IQDictionaryCompletionBlock)completion
+{
+    NSString *path = [NSString stringWithFormat:@"installations/%@",objectId];
+    
+    return [self requestWithPath: path
+                      httpMethod: kIQHTTPMethodPUT
+                       parameter: attributes
+               completionHandler: completion];
+}
+
+-(NSDictionary*)updateInstallationWithObjectId: (NSString*)objectId
+                                    attributes: (NSDictionary*)attributes
+                                         error: (NSError**)error
+{
+    NSString *path = [NSString stringWithFormat:@"installations/%@",objectId];
+    
+    return [self synchronousRequestWithPath: path
+                                 httpMethod: kIQHTTPMethodPUT
+                                  parameter: attributes
+                                      error: error];
+}
 
 #pragma mark -
 #pragma mark - Cloud Code

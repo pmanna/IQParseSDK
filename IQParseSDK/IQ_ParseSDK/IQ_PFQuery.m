@@ -367,7 +367,7 @@
     }
     else
     {
-        return NO;
+        return nil;
     }
 }
 

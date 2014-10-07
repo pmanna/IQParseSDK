@@ -44,25 +44,25 @@
 
 @interface IQ_PFObject()
 
+@property (strong, nonatomic) NSMutableDictionary   *displayAttributes;
+@property (strong, nonatomic) NSMutableDictionary   *needUpdateAttributes;
+    
+@property (strong, nonatomic) NSMutableSet          *connectionSet;
+
 @end
 
 @implementation IQ_PFObject
-{
-    NSMutableDictionary *displayAttributes;
-    NSMutableDictionary *needUpdateAttributes;
-    
-    NSMutableSet *connectionSet;
-}
+
 
 - (id)init
 {
     self = [super init];
     if (self)
     {
-        connectionSet = [[NSMutableSet alloc] init];
+        self.connectionSet          = [[NSMutableSet alloc] init];
 
-        displayAttributes       = [[NSMutableDictionary alloc] init];
-        needUpdateAttributes    = [[NSMutableDictionary alloc] init];
+        self.displayAttributes      = [[NSMutableDictionary alloc] init];
+        self.needUpdateAttributes   = [[NSMutableDictionary alloc] init];
     }
     return self;
 }
@@ -76,9 +76,9 @@
 {
     NSMutableDictionary *deserializedAttributes = [[NSMutableDictionary alloc] init];
     
-    for (NSString *key in [needUpdateAttributes allKeys])
+    for (NSString *key in [self.needUpdateAttributes allKeys])
     {
-        id object = [needUpdateAttributes objectForKey:key];
+        id object = [self.needUpdateAttributes objectForKey:key];
         
         //Handle NSDate
         if ([object isKindOfClass:[NSDate class]])
@@ -172,7 +172,7 @@
                 }
             }
 
-            if (object)     [displayAttributes setObject:object forKey:key];
+            if (object)     [self.displayAttributes setObject:object forKey:key];
         }
     }
 }
@@ -213,7 +213,7 @@
     if (self)
     {
         [self serializeAttributes:dictionary];
-        [needUpdateAttributes   addEntriesFromDictionary:dictionary];
+        [self.needUpdateAttributes   addEntriesFromDictionary:dictionary];
     }
     
     return self;
@@ -221,20 +221,20 @@
 
 - (NSArray *)allKeys
 {
-    return [displayAttributes allKeys];
+    return [self.displayAttributes allKeys];
 }
 
 - (id)objectForKey:(NSString *)key
 {
-    return [displayAttributes objectForKey:key];
+    return [self.displayAttributes objectForKey:key];
 }
 
 - (void)setObject:(id)object forKey:(NSString *)key
 {
     if (object != nil)
     {
-        [displayAttributes      setObject:object forKey:key];
-        [needUpdateAttributes   setObject:object forKey:key];
+        [self.displayAttributes      setObject:object forKey:key];
+        [self.needUpdateAttributes   setObject:object forKey:key];
     }
     else
     {
@@ -244,8 +244,8 @@
 
 - (void)removeObjectForKey:(NSString *)key
 {
-    [displayAttributes      removeObjectForKey:key];
-    [needUpdateAttributes   removeObjectForKey:key];
+    [self.displayAttributes      removeObjectForKey:key];
+    [self.needUpdateAttributes   removeObjectForKey:key];
 }
 
 //- (IQ_PFRelation *)relationForKey:(NSString *)key;
@@ -254,19 +254,19 @@
 {
     //Update display attributes
     {
-        NSArray *displayArray = [displayAttributes objectForKey:key];
+        NSArray *displayArray = [self.displayAttributes objectForKey:key];
         if (displayArray == nil)    displayArray = [[NSArray alloc] init];
-        [displayAttributes setObject:[displayArray arrayByAddingObject:object] forKey:key];
+        [self.displayAttributes setObject:[displayArray arrayByAddingObject:object] forKey:key];
     }
 
-    id value = [needUpdateAttributes objectForKey:key];
+    id value = [self.needUpdateAttributes objectForKey:key];
     if (value == nil)
     {
-        [needUpdateAttributes setObject:[[self class] addAttributeWithArray:@[object]] forKey:key];
+        [self.needUpdateAttributes setObject:[[self class] addAttributeWithArray:@[object]] forKey:key];
     }
     else if ([value isKindOfClass:[NSArray class]])
     {
-        [needUpdateAttributes setObject:[[self class] addAttributeWithArray:@[object]] forKey:key];
+        [self.needUpdateAttributes setObject:[[self class] addAttributeWithArray:@[object]] forKey:key];
     }
     else if ([value objectForKey:kParse__OpKey])
     {
@@ -274,7 +274,7 @@
         
         NSArray *newAttributedArray = [[dict objectForKey:kParseObjectsKey] arrayByAddingObject:object];
         
-        [needUpdateAttributes setObject:[[self class] addAttributeWithArray:newAttributedArray] forKey:key];
+        [self.needUpdateAttributes setObject:[[self class] addAttributeWithArray:newAttributedArray] forKey:key];
     }
 }
 
@@ -282,19 +282,19 @@
 {
     //Update display attributes
     {
-        NSArray *displayArray = [displayAttributes objectForKey:key];
+        NSArray *displayArray = [self.displayAttributes objectForKey:key];
         if (displayArray == nil)    displayArray = [[NSArray alloc] init];
-        [displayAttributes setObject:[displayArray arrayByAddingObjectsFromArray:objects] forKey:key];
+        [self.displayAttributes setObject:[displayArray arrayByAddingObjectsFromArray:objects] forKey:key];
     }
 
-    id value = [needUpdateAttributes objectForKey:key];
+    id value = [self.needUpdateAttributes objectForKey:key];
     if (value == nil)
     {
-        [needUpdateAttributes setObject:[[self class] addAttributeWithArray:objects] forKey:key];
+        [self.needUpdateAttributes setObject:[[self class] addAttributeWithArray:objects] forKey:key];
     }
     else if ([value isKindOfClass:[NSArray class]])
     {
-        [needUpdateAttributes setObject:[[self class] addAttributeWithArray:objects] forKey:key];
+        [self.needUpdateAttributes setObject:[[self class] addAttributeWithArray:objects] forKey:key];
     }
     else if ([value objectForKey:kParse__OpKey])
     {
@@ -302,7 +302,7 @@
         
         NSArray *newAttributedArray = [[dict objectForKey:kParseObjectsKey] arrayByAddingObjectsFromArray:objects];
         
-        [needUpdateAttributes setObject:[[self class] addAttributeWithArray:newAttributedArray] forKey:key];
+        [self.needUpdateAttributes setObject:[[self class] addAttributeWithArray:newAttributedArray] forKey:key];
     }
 }
 
@@ -310,22 +310,22 @@
 {
     //Update display attributes
     {
-        NSArray *displayArray = [displayAttributes objectForKey:key];
+        NSArray *displayArray = [self.displayAttributes objectForKey:key];
         if (displayArray == nil)    displayArray = [[NSArray alloc] init];
         if ([displayArray containsObject:object] == NO)
         {
-            [displayAttributes setObject:[displayArray arrayByAddingObject:object] forKey:key];
+            [self.displayAttributes setObject:[displayArray arrayByAddingObject:object] forKey:key];
         }
     }
 
-    id value = [needUpdateAttributes objectForKey:key];
+    id value = [self.needUpdateAttributes objectForKey:key];
     if (value == nil)
     {
-        [needUpdateAttributes setObject:[[self class] addUniqueAttributeWithArray:@[object]] forKey:key];
+        [self.needUpdateAttributes setObject:[[self class] addUniqueAttributeWithArray:@[object]] forKey:key];
     }
     else if ([value isKindOfClass:[NSArray class]])
     {
-        [needUpdateAttributes setObject:[[self class] addUniqueAttributeWithArray:@[object]] forKey:key];
+        [self.needUpdateAttributes setObject:[[self class] addUniqueAttributeWithArray:@[object]] forKey:key];
     }
     else if ([value objectForKey:kParse__OpKey])
     {
@@ -335,7 +335,7 @@
         
         if ([attributedArray containsObject:object] == NO)
         {
-            [needUpdateAttributes setObject:[[self class] addUniqueAttributeWithArray:[attributedArray arrayByAddingObject:object]] forKey:key];
+            [self.needUpdateAttributes setObject:[[self class] addUniqueAttributeWithArray:[attributedArray arrayByAddingObject:object]] forKey:key];
         }
     }
 }
@@ -344,28 +344,28 @@
 {
     //Update display attributes
     {
-        NSArray *displayArray = [displayAttributes objectForKey:key];
+        NSArray *displayArray = [self.displayAttributes objectForKey:key];
 
         NSMutableOrderedSet *orderedDisplaySet = [[NSMutableOrderedSet alloc] initWithArray:displayArray];
         [orderedDisplaySet addObjectsFromArray:objects];
-        [displayAttributes setObject:[orderedDisplaySet array] forKey:key];
+        [self.displayAttributes setObject:[orderedDisplaySet array] forKey:key];
     }
 
-    id value = [needUpdateAttributes objectForKey:key];
+    id value = [self.needUpdateAttributes objectForKey:key];
     if (value == nil)
     {
-        [needUpdateAttributes setObject:[[self class] addUniqueAttributeWithArray:objects] forKey:key];
+        [self.needUpdateAttributes setObject:[[self class] addUniqueAttributeWithArray:objects] forKey:key];
     }
     else if ([value isKindOfClass:[NSArray class]])
     {
-        [needUpdateAttributes setObject:[[self class] addUniqueAttributeWithArray:objects] forKey:key];
+        [self.needUpdateAttributes setObject:[[self class] addUniqueAttributeWithArray:objects] forKey:key];
     }
     else if ([value objectForKey:kParse__OpKey])
     {
         NSDictionary *dict = [value objectForKey:kParse__OpKey];
         NSMutableOrderedSet *orderedAttributedSet = [[NSMutableOrderedSet alloc] initWithArray:[dict objectForKey:kParseObjectsKey]];
         [orderedAttributedSet addObjectsFromArray:objects];
-        [needUpdateAttributes setObject:[[self class] addUniqueAttributeWithArray:[orderedAttributedSet array]] forKey:key];
+        [self.needUpdateAttributes setObject:[[self class] addUniqueAttributeWithArray:[orderedAttributedSet array]] forKey:key];
     }
 }
 
@@ -373,18 +373,18 @@
 {
     //Update display attributes
     {
-        NSMutableArray *newArray = [[displayAttributes objectForKey:key] mutableCopy];
+        NSMutableArray *newArray = [[self.displayAttributes objectForKey:key] mutableCopy];
         [newArray removeObject:object];
-        [displayAttributes setObject:newArray forKey:key];
+        [self.displayAttributes setObject:newArray forKey:key];
     }
 
-    id value = [needUpdateAttributes objectForKey:key];
+    id value = [self.needUpdateAttributes objectForKey:key];
     
     if ([value isKindOfClass:[NSArray class]])
     {
         NSMutableArray *newArray = [value mutableCopy];
         [newArray removeObject:object];
-        [needUpdateAttributes setObject:newArray forKey:key];
+        [self.needUpdateAttributes setObject:newArray forKey:key];
     }
     else if ([value objectForKey:kParse__OpKey])
     {
@@ -396,11 +396,11 @@
         if ([newAttributedArray count])
         {
             [dict setObject:newAttributedArray forKey:kParseObjectsKey];
-            [needUpdateAttributes setObject:dict forKey:key];
+            [self.needUpdateAttributes setObject:dict forKey:key];
         }
         else
         {
-            [needUpdateAttributes removeObjectForKey:key];
+            [self.needUpdateAttributes removeObjectForKey:key];
         }
     }
 }
@@ -409,18 +409,18 @@
 {
     //Update display attributes
     {
-        NSMutableArray *newArray = [[displayAttributes objectForKey:key] mutableCopy];
+        NSMutableArray *newArray = [[self.displayAttributes objectForKey:key] mutableCopy];
         [newArray removeObjectsInArray:objects];
-        [displayAttributes setObject:newArray forKey:key];
+        [self.displayAttributes setObject:newArray forKey:key];
     }
     
-    id value = [needUpdateAttributes objectForKey:key];
+    id value = [self.needUpdateAttributes objectForKey:key];
     
     if ([value isKindOfClass:[NSArray class]])
     {
         NSMutableArray *newArray = [value mutableCopy];
         [newArray removeObjectsInArray:objects];
-        [needUpdateAttributes setObject:newArray forKey:key];
+        [self.needUpdateAttributes setObject:newArray forKey:key];
     }
     else if ([value objectForKey:kParse__OpKey])
     {
@@ -432,23 +432,23 @@
         if ([newAttributedArray count])
         {
             [dict setObject:newAttributedArray forKey:kParseObjectsKey];
-            [needUpdateAttributes setObject:dict forKey:key];
+            [self.needUpdateAttributes setObject:dict forKey:key];
         }
         else
         {
-            [needUpdateAttributes removeObjectForKey:key];
+            [self.needUpdateAttributes removeObjectForKey:key];
         }
     }
 }
 
 - (void)incrementKey:(NSString *)key
 {
-    [displayAttributes setObject:[[self class] incrementAttribute] forKey:key];
+    [self.displayAttributes setObject:[[self class] incrementAttribute] forKey:key];
 }
 
 - (void)incrementKey:(NSString *)key byAmount:(NSNumber *)amount
 {
-    [displayAttributes setObject:[[self class] incrementAttributeByAmount:amount] forKey:key];
+    [self.displayAttributes setObject:[[self class] incrementAttributeByAmount:amount] forKey:key];
 }
 
 - (BOOL)save
@@ -492,7 +492,7 @@
     {
         __block IQURLConnection *connection = [[IQPFHTTPService service] updateObjectWithParseClass:self.parseClassName objectId:self.objectId attributes:[self deserializedAttributes] completionHandler:^(NSDictionary *result, NSError *error) {
             
-            if (connection) [connectionSet removeObject:connection];
+            if (connection) [self.connectionSet removeObject:connection];
 
             if (result)
             {
@@ -505,13 +505,13 @@
             }
         }];
         
-        if (connection) [connectionSet addObject:connection];
+        if (connection) [self.connectionSet addObject:connection];
     }
     else
     {
         __block IQURLConnection *connection = [[IQPFHTTPService service] createObjectWithParseClass:self.parseClassName attributes:[self deserializedAttributes] completionHandler:^(NSDictionary *result, NSError *error) {
 
-            if (connection) [connectionSet removeObject:connection];
+            if (connection) [self.connectionSet removeObject:connection];
 
             if (result)
             {
@@ -524,7 +524,7 @@
             }
         }];
         
-        if (connection) [connectionSet addObject:connection];
+        if (connection) [self.connectionSet addObject:connection];
     }
 }
 
@@ -578,7 +578,7 @@
 {
     __block IQURLConnection *connection = [[IQPFHTTPService service] objectsWithParseClass:self.parseClassName urlParameter:nil objectId:self.objectId completionHandler:^(NSDictionary *result, NSError *error) {
 
-        if (connection) [connectionSet removeObject:connection];
+        if (connection) [self.connectionSet removeObject:connection];
 
         if (result)
         {
@@ -590,7 +590,7 @@
             block((result!= nil)?self:nil,error);
         }
         
-        if (connection) [connectionSet addObject:connection];
+        if (connection) [self.connectionSet addObject:connection];
     }];
 }
 
@@ -638,8 +638,8 @@
     {
         self.objectId = nil;
         _parseClassName = nil;
-        [displayAttributes removeAllObjects];
-        [needUpdateAttributes removeAllObjects];
+        [self.displayAttributes removeAllObjects];
+        [self.needUpdateAttributes removeAllObjects];
         return YES;
     }
     else
@@ -657,14 +657,14 @@
 {
     __block IQURLConnection *connection = [[IQPFHTTPService service] deleteObjectWithParseClass:self.parseClassName objectId:self.objectId completionHandler:^(NSDictionary *result, NSError *error) {
 
-        if (connection) [connectionSet removeObject:connection];
+        if (connection) [self.connectionSet removeObject:connection];
 
         if (result)
         {
             self.objectId = nil;
             _parseClassName = nil;
-            [displayAttributes removeAllObjects];
-            [needUpdateAttributes removeAllObjects];
+            [self.displayAttributes removeAllObjects];
+            [self.needUpdateAttributes removeAllObjects];
         }
         
         if (block)
@@ -673,7 +673,7 @@
         }
     }];
     
-    if (connection) [connectionSet addObject:connection];
+    if (connection) [self.connectionSet addObject:connection];
 }
 
 - (void)deleteInBackgroundWithTarget:(id)target selector:(SEL)selector

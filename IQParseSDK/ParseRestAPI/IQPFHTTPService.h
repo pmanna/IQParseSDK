@@ -88,6 +88,22 @@
 -(NSDictionary*)deleteUserWithObjectId:(NSString*)objectId error:(NSError**)error;
 
 #pragma mark -
+#pragma mark - Installations
+
+-(IQURLConnection*)installationWithObjectId:(NSString*)objectId completionHandler:(IQDictionaryCompletionBlock)completion;
+-(NSDictionary*)installationWithObjectId:(NSString*)objectId error:(NSError**)error;
+-(IQURLConnection*)createInstallationWithAttributes:(NSDictionary*)attributes
+                                  completionHandler:(IQDictionaryCompletionBlock)completion;
+-(NSDictionary*)createInstallationWithAttributes:(NSDictionary*)attributes
+                                           error:(NSError**)error;
+-(IQURLConnection*)updateInstallationWithObjectId:(NSString*)objectId
+                                       attributes:(NSDictionary*)attributes
+                                completionHandler:(IQDictionaryCompletionBlock)completion;
+-(NSDictionary*)updateInstallationWithObjectId: (NSString*)objectId
+                                    attributes: (NSDictionary*)attributes
+                                         error: (NSError**)error;
+
+#pragma mark -
 #pragma mark - Cloud Code
 
 //Call Parse Function

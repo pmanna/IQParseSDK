@@ -1,7 +1,9 @@
 //
-//  IQ_Parse.h
-// https://github.com/hackiftekhar/IQParseSDK
-// Copyright (c) 2013-14 Iftekhar Qurashi.
+//  NSData+Hex.h
+//  IQParseSDK Demo
+//
+//  Created by Paolo Manna on 07/10/2014.
+//  Copyright (c) 2014 Paolo Manna. All rights reserved.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -23,27 +25,8 @@
 
 #import <Foundation/Foundation.h>
 
-#import "IQ_PFACL.h"
-#import "IQ_PFCloud.h"
-#import "IQ_PFConstants.h"
-#import "IQ_PFFile.h"
-#import "IQ_PFGeoPoint.h"
-#import "IQ_PFImageView.h"
-#import "IQ_PFObject.h"
-#import "IQ_PFQuery.h"
-#import "IQ_PFRelation.h"
-#import "IQ_PFRole.h"
-#import "IQ_PFUser.h"
-#import "IQ_PFInstallation.h"
-#import "IQ_PFPush.h"
+@interface NSData (Hex)
 
-@interface IQ_Parse : NSObject
-
-+ (void)setApplicationId:(NSString *)applicationId restAPIKey:(NSString *)restAPIKey;
-+ (NSString *)getApplicationId;
-+ (NSString *)getRestAPIKey;
-
-//+ (void)offlineMessagesEnabled:(BOOL)enabled;
-//+ (void)errorMessagesEnabled:(BOOL)enabled;
+- (NSString *)hexadecimalString;
 
 @end

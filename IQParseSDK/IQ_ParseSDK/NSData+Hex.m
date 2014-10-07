@@ -1,7 +1,9 @@
 //
-//  IQ_Parse.h
-// https://github.com/hackiftekhar/IQParseSDK
-// Copyright (c) 2013-14 Iftekhar Qurashi.
+//  NSData+Hex.m
+//  IQParseSDK Demo
+//
+//  Created by Paolo Manna on 07/10/2014.
+//  Copyright (c) 2014 Paolo Manna. All rights reserved.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -21,29 +23,26 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#import <Foundation/Foundation.h>
+#import "NSData+Hex.h"
 
-#import "IQ_PFACL.h"
-#import "IQ_PFCloud.h"
-#import "IQ_PFConstants.h"
-#import "IQ_PFFile.h"
-#import "IQ_PFGeoPoint.h"
-#import "IQ_PFImageView.h"
-#import "IQ_PFObject.h"
-#import "IQ_PFQuery.h"
-#import "IQ_PFRelation.h"
-#import "IQ_PFRole.h"
-#import "IQ_PFUser.h"
-#import "IQ_PFInstallation.h"
-#import "IQ_PFPush.h"
+@implementation NSData (Hex)
 
-@interface IQ_Parse : NSObject
-
-+ (void)setApplicationId:(NSString *)applicationId restAPIKey:(NSString *)restAPIKey;
-+ (NSString *)getApplicationId;
-+ (NSString *)getRestAPIKey;
-
-//+ (void)offlineMessagesEnabled:(BOOL)enabled;
-//+ (void)errorMessagesEnabled:(BOOL)enabled;
+- (NSString *)hexadecimalString
+{
+    /* Returns hexadecimal string of NSData. Empty string if data is empty.   */
+    
+    const unsigned char *dataBuffer = (const unsigned char *)[self bytes];
+    
+    if (!dataBuffer)
+        return [NSString string];
+    
+    NSUInteger          dataLength  = [self length];
+    NSMutableString     *hexString  = [NSMutableString stringWithCapacity:(dataLength * 2)];
+    
+    for (int i = 0; i < dataLength; ++i)
+        [hexString appendString:[NSString stringWithFormat:@"%02lx", (unsigned long)dataBuffer[i]]];
+    
+    return [NSString stringWithString:hexString];
+}
 
 @end
